@@ -19,7 +19,7 @@ void LevelManager::ReadMap(int n) {
 }
 
 
-//0-пустой тайл , 1-кирпич , 2-сталь , 3-вода , 4-куст , 5-лед
+//0-пустой тайл , 1-кирпич , 2-сталь , 3-вода , 4-куст , 5-лед, 6-спавн врагов 7-спавн плейира
 void LevelManager::DrawMap(){
 	for (int i = 0; i < 13; i++) {
 		for (int j = 0; j < 13; j++) {
@@ -43,6 +43,12 @@ void LevelManager::DrawMap(){
 				break;
 			case '5':
 				tile = new Tile(image, j * 48, i * 48, 18 * 16, 16 * 2, 16, 16, false, true, 0);
+				break;
+			case '6':
+				tile = new Tile(image, j * 48, i * 48, 22 * 16, 0, 16, 16, false, true, 0);
+				break;
+			case '7':
+				tile = new Tile(image, j * 48, i * 48, 22 * 16, 0, 16, 16, false, true, 0);
 				break;
 			}
 			tiles.push_back(tile);
