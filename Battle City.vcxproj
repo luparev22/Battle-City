@@ -167,6 +167,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="source\code\Header.h" />
+    <ClInclude Include="source\code\leveling.h" />
     <ClInclude Include="source\code\pch.h" />
     <ClInclude Include="source\code\entity.h" />
   </ItemGroup>
