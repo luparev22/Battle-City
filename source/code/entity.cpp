@@ -2,6 +2,7 @@
 #include "entity.h"
 
 Entity::Entity(Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H) :entities(entities),x(x), y(y),W(W),H(H), alive(true) {
+
 	texture.loadFromImage(image);
 	sprite.setTexture(texture);
 	sprite.setTextureRect(IntRect(x_image, y_image, W, H));
@@ -9,6 +10,7 @@ Entity::Entity(Image image, std::list <Entity*> *entities, int x, int y, int x_i
 	getSprite()->setScale(3, 3);
 
 }
+
 
 Tank::Tank(Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H) :Entity(image,entities, x, y, x_image, y_image, W, H), speed(4), direction('u'), tankLevel(3) {}
 
@@ -115,7 +117,9 @@ void PlayerTank::update(float dt) {
 			getSprite()->setTextureRect(IntRect(16, 16 * getTankLevel(), 16, 16));
 		}
 		setAnim(!getAnim());
+
 		setY(getY() - getSpeed());
+
 		break;
 	case 'd':
 		setDirection('d');
@@ -127,7 +131,9 @@ void PlayerTank::update(float dt) {
 
 		}
 		setAnim(!getAnim());
+
 		setY(getY() + getSpeed());
+
 		break;
 	case 'l':
 		setDirection('l');
@@ -138,7 +144,9 @@ void PlayerTank::update(float dt) {
 			getSprite()->setTextureRect(IntRect(48, 16 * getTankLevel(), 16, 16));
 		}
 		setAnim(!getAnim());
+
 		setX(getX() - getSpeed());
+
 		break;
 	case 'r':
 		setDirection('r');
@@ -150,7 +158,9 @@ void PlayerTank::update(float dt) {
 
 		}
 		setAnim(!getAnim());
+
 		setX(getX() + getSpeed());
+
 		break;
 	}
 
@@ -171,7 +181,9 @@ void EnemyTank::changeDirection() {
 }
 
 void EnemyTank::update(float dt) {
+
 	if (rand() % 32 == 0 && !getReload())this->shoot(getTexture().copyToImage());
+
 	if (getDirection() == 'u' && getY() == 0) {
 		setDirection('l');
 	}
@@ -186,7 +198,9 @@ void EnemyTank::update(float dt) {
 	}
 	
 	if ((int)getX() % 8 == 0 && (int)getY() % 8 == 0) {
+
 		if(rand()%64==0)changeDirection();
+
 	}
 	switch (getDirection()) {
 	case 'u':
@@ -199,6 +213,7 @@ void EnemyTank::update(float dt) {
 		}
 		setAnim(!getAnim());
 		setY(getY() - getSpeed());
+
 		break;
 	case 'd':
 		setDirection('d');
@@ -210,7 +225,9 @@ void EnemyTank::update(float dt) {
 
 		}
 		setAnim(!getAnim());
+
 		setY(getY() + getSpeed());
+
 		break;
 	case 'l':
 		setDirection('l');
@@ -221,7 +238,9 @@ void EnemyTank::update(float dt) {
 			getSprite()->setTextureRect(IntRect(176, 64 + 16 * getTankLevel(), 16, 16));
 		}
 		setAnim(!getAnim());
+
 		setX(getX() - getSpeed());
+
 		break;
 	case 'r':
 		setDirection('r');
@@ -233,7 +252,9 @@ void EnemyTank::update(float dt) {
 
 		}
 		setAnim(!getAnim());
+
 		setX(getX() + getSpeed());
+
 		break;
 	}
 	if (getX() < 0)setX(0);

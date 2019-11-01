@@ -87,7 +87,7 @@ int main() {
 				if ((*it) == (*it2))continue;
 
 				if ((*it)->getRect().intersects((*it2)->getRect(), lol) && (*it)->getName()=="Enemy" && (*it2)->getName()=="Enemy") {
-					
+
 				}
 			}
 		}
