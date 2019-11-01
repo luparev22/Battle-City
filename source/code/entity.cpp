@@ -8,8 +8,8 @@ Entity::Entity(Image image, float x, float y, int x_image, int y_image, int W, i
 	sprite.setPosition(x, y);
 }
 
-Tank::Tank(Image image, float x, float y, int x_image, int y_image, int W, int H) :Entity(image, x, y, x_image, y_image, W, H), speed(50), direction('u'), tankLevel(3) {
-
+Tank::Tank(Image image, float x, float y, int x_image, int y_image, int W, int H) :Entity(image, x, y, x_image, y_image, W, H), speed(500), direction('u'), tankLevel(3) {
+	
 	getSprite()->setScale(3, 3);
 }
 

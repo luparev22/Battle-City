@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "entity.h"
 #include <list>
-
+#include "leveling.h"
 using namespace sf;
 
 int main() {
@@ -12,8 +12,13 @@ int main() {
 
 	RenderWindow window(VideoMode(wx, wy), "Battle City");
 
+
 	Image sprite;
 	sprite.loadFromFile("source/img/sprites.png");
+
+	LevelManager lm(sprite);
+	lm.ReadMap(1);
+	lm.DrawMap();
 
 	Tank player(sprite, 640, 360, 0, 0, 16, 16);
 
@@ -56,8 +61,17 @@ int main() {
 		}
 
 		window.clear();
+		for (auto i : lm.tiles) {
+			if (i->getLayout() != 1)
+				window.draw(*(i->getSprite()));
+		}
 		window.draw(*player.getSprite());
+		for (auto i : lm.tiles) {
+			if (i->getLayout() == 1)
+				window.draw(*(i->getSprite()));
+		}
 		window.display();
+		
 	}
 
 	return 0;
