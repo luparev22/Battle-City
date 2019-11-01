@@ -7,23 +7,39 @@ using namespace sf;
 
 int main() {
 	srand(time(NULL));
-	int wx = 1280, wy = 720;
+	int wx = 624, wy = 624;
 	sf::Clock clock;
-
 	RenderWindow window(VideoMode(wx, wy), "Battle City");
 
-
+	window.setFramerateLimit(20);
 	Image sprite;
 	sprite.loadFromFile("source/img/sprites.png");
+	sprite.createMaskFromColor(sf::Color::Color(0, 0, 1), 0);
 
 	LevelManager lm(sprite);
 	lm.ReadMap(1);
 	lm.DrawMap();
 
-	Tank player(sprite, 640, 360, 0, 0, 16, 16);
-
 	std::list <Entity*> entities;
 	std::list <Entity*>::iterator it;
+	std::list <Entity*>::iterator it2;
+	
+	PlayerTank player(sprite, &entities, 320, 540, 0, 0, 16, 16);
+
+	entities.push_back(new EnemyTank(sprite, &entities, 0, 0, 0, 0, 16, 16));
+	entities.push_back(new EnemyTank(sprite, &entities, 144, 0, 0, 0, 16, 16));
+	entities.push_back(new EnemyTank(sprite, &entities, 192, 0, 0, 0, 16, 16));
+	/*
+	entities.push_back(new EnemyTank(sprite, entities, 240, 0, 0, 0, 16, 16));
+	entities.push_back(new EnemyTank(sprite, entities, 288, 0, 0, 0, 16, 16));
+	entities.push_back(new EnemyTank(sprite, entities, 336, 0, 0, 0, 16, 16));
+	entities.push_back(new EnemyTank(sprite, entities, 384, 0, 0, 0, 16, 16));
+	entities.push_back(new EnemyTank(sprite, entities, 432, 0, 0, 0, 16, 16));
+	entities.push_back(new EnemyTank(sprite, entities, 480, 0, 0, 0, 16, 16));
+	entities.push_back(new EnemyTank(sprite, entities, 528, 0, 0, 0, 16, 16));
+	entities.push_back(new EnemyTank(sprite, entities, 576, 0, 0, 0, 16, 16));
+	*/
+
 
 	while (window.isOpen()) {
 		float dt = clock.restart().asSeconds();
@@ -50,6 +66,12 @@ int main() {
 			player.setDirection('d');
 			player.update(dt);
 		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+			std::cout << entities.size() << std::endl;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !player.getReload()) {
+			player.shoot(sprite);
+		}
 
 		for (it = entities.begin(); it != entities.end();) {
 			Entity *p = *it;
@@ -57,13 +79,33 @@ int main() {
 			if (!p->isAlive()) {
 				it = entities.erase(it);
 				delete p;
+			}else {
+				it++;
 			}
 		}
 
+		IntRect lol;
+
+		for (it = entities.begin(); it != entities.end(); it++)
+		{
+			for (it2 = entities.begin(); it2 != entities.end(); it2++) {
+				if ((*it) == (*it2))continue;
+
+				if ((*it)->getRect().intersects((*it2)->getRect(), lol) && (*it)->getName()=="Enemy" && (*it2)->getName()=="Enemy") {
+
+				}
+			}
+		}
+
+
 		window.clear();
+
 		for (auto i : lm.tiles) {
 			if (i->getLayout() != 1)
 				window.draw(*(i->getSprite()));
+		}
+		for (it = entities.begin(); it != entities.end(); it++) {
+			window.draw(*(*it)->getSprite());
 		}
 		window.draw(*player.getSprite());
 		for (auto i : lm.tiles) {
