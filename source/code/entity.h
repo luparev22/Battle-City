@@ -12,6 +12,7 @@ private:
 	Texture texture;
 	Sprite sprite;
 	String name;
+	char direction;
 	int x;
 	int y;
 	int W;
@@ -33,26 +34,25 @@ public:
 	void setName(String str) {name = str;}
 	Texture getTexture() {return texture;};
 	String getName() { return name; };
+	void setDirection(char dir) { direction = dir; };
+	char getDirection() { return direction; };
 };
 
 class Tank : public Entity {
 	private:
 		float speed;
 		unsigned short int tankLevel;
-		char direction;
 		bool anim = true;
 		bool reload = false;
 	public:
 		Tank(Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H);
 		void update(float dt)=0;
-		void setDirection(char dir) { direction = dir; };
 		void shoot(Image image);
 		void setReload(bool rel) { reload = rel; };
 		void setAnim(bool an) { anim = an; };
 		void setSpeed(float spd) { speed = spd; };
 		void setTankLevel(int tl) { tankLevel = tl; };
 		unsigned short int getTankLevel() { return tankLevel; };
-		char getDirection() { return direction; };
 		bool getReload() { return reload; };
 		bool getAnim() { return anim; };
 		float getSpeed() { return speed; };
@@ -76,7 +76,6 @@ class EnemyTank : public Tank {
 class Bullet :public Entity {
 private:
 	float speed;
-	char direction;
 	Tank* father;
 public:
 	Bullet(Tank *player, Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H);

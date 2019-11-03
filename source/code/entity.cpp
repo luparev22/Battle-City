@@ -11,7 +11,10 @@ Entity::Entity(Image image, std::list <Entity*> *entities, int x, int y, int x_i
 
 }
 
-Tank::Tank(Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H) :Entity(image,entities, x, y, x_image, y_image, W, H), speed(4), direction('u'), tankLevel(3) {}
+Tank::Tank(Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H) :Entity(image,entities, x, y, x_image, y_image, W, H), speed(4), tankLevel(3) 
+{
+	setDirection('u');
+}
 
 void Tank::shoot(Image image) {
 	getEntities()->push_back(new Bullet(this, image, getEntities(), 0, 0, 323, 102, 3, 4));
@@ -30,13 +33,13 @@ EnemyTank::EnemyTank(Image image, std::list <Entity*> *entities, int x, int y, i
 Bullet::Bullet(Tank *player, Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H) :Entity(image, entities, x, y, x_image, y_image, W, H) {
 	setName("Bullet");
 	player->setReload(true);
-	direction = player->getDirection();
+	setDirection(player->getDirection());
 	setX(player->getX()+16);
 	setY(player->getY()+16);
 	setAlive(true);
 	speed = 16;
 	father = player;
-	switch (direction) {
+	switch (getDirection()) {
 		case 'u':
 			getSprite()->setTextureRect(IntRect(323, 102, 3, 4));
 			break;
@@ -54,7 +57,7 @@ Bullet::Bullet(Tank *player, Image image, std::list <Entity*> *entities, int x, 
 }
 
 void Bullet::update(float dt) {
-		switch (direction) {
+	switch (getDirection()) {
 		case 'u':
 			setY(getY() - speed);
 			break;
