@@ -11,7 +11,7 @@ Entity::Entity(Image image, std::list <Entity*> *entities, int x, int y, int x_i
 
 }
 
-Tank::Tank(Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H) :Entity(image,entities, x, y, x_image, y_image, W, H), speed(4), direction('u'), tankLevel(3) {}
+Tank::Tank(Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H) :Entity(image,entities, x, y, x_image, y_image, W, H), speed(6), direction('u'), tankLevel(3) {}
 
 void Tank::shoot(Image image) {
 	getEntities()->push_back(new Bullet(this, image, getEntities(), 0, 0, 323, 102, 3, 4));
@@ -31,23 +31,29 @@ Bullet::Bullet(Tank *player, Image image, std::list <Entity*> *entities, int x, 
 	setName("Bullet");
 	player->setReload(true);
 	direction = player->getDirection();
-	setX(player->getX()+16);
-	setY(player->getY()+16);
 	setAlive(true);
 	speed = 16;
 	father = player;
 	switch (direction) {
 		case 'u':
 			getSprite()->setTextureRect(IntRect(323, 102, 3, 4));
+			setX(player->getX() + 19);
+			setY(player->getY() + 16);
 			break;
 		case 'd':
 			getSprite()->setTextureRect(IntRect(339, 102, 3, 4));
+			setX(player->getX() + 19);
+			setY(player->getY() + 16);
 			break;
 		case 'l':
 			getSprite()->setTextureRect(IntRect(330, 102, 4, 3));
+			setX(player->getX() + 16);
+			setY(player->getY() + 19);
 			break;
 		case 'r':
 			getSprite()->setTextureRect(IntRect(346, 102, 4, 3));
+			setX(player->getX() + 16);
+			setY(player->getY() + 19);
 			break;
 	}
 
@@ -75,7 +81,16 @@ void Bullet::update(float dt) {
 		std::list <Entity*> entities = *getEntities();
 		std::list <Entity*>::iterator it;
 		for (it = entities.begin(); it != entities.end(); it++) {
-			if (father->getName() == "Player") {
+			if ((*it)->getName() == "Bullet") {
+				if ((*it) == this)continue;
+				if (this->getRect().intersects((*it)->getRect())) {
+					(*it)->setAlive(false);
+					this->setAlive(false);
+					getFather()->setReload(false);
+					((Bullet*)(*it))->getFather()->setReload(false);
+				}
+			}
+			else if (father->getName() == "Player") {
 				if ((*it) == this)continue;
 				if ((*it) == father)continue;
 				if (this->getRect().intersects((*it)->getRect())) {
@@ -83,8 +98,7 @@ void Bullet::update(float dt) {
 					this->setAlive(false);
 					getFather()->setReload(false);
 				}
-			}
-			else if (father->getName() == "Enemy") {
+			}else if (father->getName() == "Enemy") {
 				if ((*it) == this)continue;
 				if ((*it)->getName()=="Enemy")continue;
 				if (this->getRect().intersects((*it)->getRect())) {
@@ -92,17 +106,8 @@ void Bullet::update(float dt) {
 					this->setAlive(false);
 					getFather()->setReload(false);
 				}
-			}else if ((*it)->getName() == "Bullet") {
-				if ((*it) == this)continue;
-				if (this->getRect().intersects((*it)->getRect())) {
-					(*it)->setAlive(false);
-					this->setAlive(false);
-					getFather()->setReload(false);
-				}
 			}
-
 		}
-		getSprite()->setPosition(getX(), getY());
 }
 
 void PlayerTank::update(float dt) {
@@ -169,7 +174,6 @@ void PlayerTank::update(float dt) {
 	if (getY() > 624 - 48)setY(624 - 48);
 	setX(getX());
 	setY(getY());
-	getSprite()->setPosition(getX(), getY());
 
 }
 
@@ -197,9 +201,9 @@ void EnemyTank::update(float dt) {
 		setDirection('u');
 	}
 	
-	if ((int)getX() % 8 == 0 && (int)getY() % 8 == 0) {
+	if ((int)getX() % 48 == 0 && (int)getY() % 48 == 0) {
 
-		if(rand()%64==0)changeDirection();
+		if(rand()%8==0)changeDirection();
 
 	}
 	switch (getDirection()) {
@@ -270,5 +274,4 @@ void EnemyTank::update(float dt) {
 	
 	this->setSpeed(4);
 
-	getSprite()->setPosition(getX(), getY());
 }

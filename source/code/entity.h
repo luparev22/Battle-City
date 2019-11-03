@@ -23,8 +23,14 @@ public:
 	Sprite* getSprite() { return &sprite; };
 	int getX() { return x; };
 	int getY() { return y; };
-	void setX(int new_x) { x = new_x; };
-	void setY(int new_y) { y = new_y; };
+	void setX(int new_x) { 
+		x = new_x; 
+		sprite.setPosition(x, y);
+	};
+	void setY(int new_y) { 
+		y = new_y;
+		sprite.setPosition(x, y);
+	};
 	virtual void update(float dt) = 0;
 	bool isAlive() { return alive; };
 	void setAlive(bool al) { alive = al; };

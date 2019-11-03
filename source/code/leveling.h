@@ -43,6 +43,8 @@ public:
 		sprite.setPosition(x, y);
 		sprite.setScale(3, 3);
 	}
+	int getX() { return x; };
+	int getY() { return y; };
 };
 
 #endif
