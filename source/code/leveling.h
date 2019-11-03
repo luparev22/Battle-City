@@ -32,6 +32,10 @@ private:
 	bool isDriveable;
 	int layout;
 public:
+	int getX() { return x; };
+	int getY() { return y; };
+	bool getDrive() { return isDriveable; };
+	IntRect getRect() { return IntRect(x, y, 48, 48); };
 	int getLayout() { return layout; };
 	Sprite* getSprite() { return &sprite; };
 	Tile(Image img, int x, int y, int x_image, int y_image, int W, int H,bool breakable,bool drive,int layout)
@@ -43,8 +47,6 @@ public:
 		sprite.setPosition(x, y);
 		sprite.setScale(3, 3);
 	}
-	int getX() { return x; };
-	int getY() { return y; };
 };
 
 #endif

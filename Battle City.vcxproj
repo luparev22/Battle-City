@@ -167,13 +167,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="source\code\Header.h" />
+    <ClInclude Include="source\code\collision.h" />
     <ClInclude Include="source\code\leveling.h" />
     <ClInclude Include="source\code\pch.h" />
     <ClInclude Include="source\code\entity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\code\Battle City.cpp" />
+    <ClCompile Include="source\code\collisions.cpp" />
     <ClCompile Include="source\code\Leveling.cpp" />
     <ClCompile Include="source\code\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

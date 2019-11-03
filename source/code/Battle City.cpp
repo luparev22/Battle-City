@@ -4,6 +4,8 @@
 #include "entity.h"
 #include <list>
 #include "leveling.h"
+#include "collision.h"
+
 using namespace sf;
 
 int main() {
@@ -27,6 +29,7 @@ int main() {
 	buf_shoot.loadFromFile("source/sounds/shoot.wav");
 	Sound sound_once;
 	Sound sound_always;
+	sound_once.setVolume(50);
 	sound_once.setVolume(50);
 	sound_always.setVolume(50);
 
@@ -199,6 +202,8 @@ int main() {
 		}
 
 		*/
+		collisions(&player,lm);
+
 
 		window.clear();
 
