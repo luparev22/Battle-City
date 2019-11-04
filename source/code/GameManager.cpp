@@ -239,6 +239,24 @@ void Game::Constructor(RenderWindow &window) {
 	Texture texture;
 	texture.loadFromImage(image);
 
+	Sprite base_a;
+	base_a.setTexture(texture);
+	base_a.setTextureRect(IntRect(304, 32, 8, 8));
+
+	Sprite base_b;
+	base_b.setTexture(texture);
+	base_b.setTextureRect(IntRect(312, 32, 8, 8));
+
+	Sprite base_c;
+	base_c.setTexture(texture);
+	base_c.setTextureRect(IntRect(304, 40, 8, 8));
+
+	Sprite base_d;
+	base_d.setTexture(texture);
+	base_d.setTextureRect(IntRect(312, 40, 8, 8));
+
+
+
 	Sprite black;
 	black.setTexture(texture);
 	black.setTextureRect(IntRect(280, 80, 8, 8));
@@ -278,8 +296,14 @@ void Game::Constructor(RenderWindow &window) {
 	Text save;
 	save.setFont(font);
 	save.setString("SAVE");
-	save.setPosition(650, 570);
+	save.setPosition(650, 520);
 	save.setCharacterSize(17);
+
+	Text back;
+	back.setFont(font);
+	back.setString("BACK");
+	back.setPosition(650, 570);
+	back.setCharacterSize(17);
 
 
 	RectangleShape save_button;
@@ -289,10 +313,35 @@ void Game::Constructor(RenderWindow &window) {
 	save_button.setFillColor(Color::Black);
 	save_button.setOutlineThickness(1);
 
-	int x_button = save_button.getGlobalBounds().left;
-	int y_button = save_button.getGlobalBounds().top;
-	int width_button = save_button.getGlobalBounds().width;
-	int height_button = save_button.getGlobalBounds().height;
+	int x_button_save = save_button.getGlobalBounds().left;
+	int y_button_save = save_button.getGlobalBounds().top;
+	int width_button_save = save_button.getGlobalBounds().width;
+	int height_button_save = save_button.getGlobalBounds().height;
+
+	RectangleShape back_button;
+	back_button.setPosition(back.getGlobalBounds().left - 10, back.getGlobalBounds().top - 10);
+	back_button.setSize(Vector2f(back.getGlobalBounds().width + 20, back.getGlobalBounds().height + 20));
+	back_button.setOutlineColor(Color::White);
+	back_button.setFillColor(Color::Black);
+	back_button.setOutlineThickness(1);
+
+	int x_button_back  = back_button.getGlobalBounds().left;
+	int y_button_back = back_button.getGlobalBounds().top;
+	int width_button_back = back_button.getGlobalBounds().width;
+	int height_button_back = back_button.getGlobalBounds().height;
+
+	RectangleShape block_highlight;
+	block_highlight.setPosition(state_sprite.getGlobalBounds().left, state_sprite.getGlobalBounds().top);
+	block_highlight.setSize(Vector2f(48, 48));
+	block_highlight.setOutlineColor(Color::White);
+	block_highlight.setFillColor(Color::Black);
+	block_highlight.setOutlineThickness(2);
+
+	Text text_highlight;
+	text_highlight.setFont(font);
+	text_highlight.setString("BLOCK");
+	text_highlight.setPosition(block_highlight.getGlobalBounds().left, block_highlight.getGlobalBounds().top+block_highlight.getGlobalBounds().height);
+	text_highlight.setCharacterSize(17);
 
 	char level[26][26];
 
@@ -301,9 +350,63 @@ void Game::Constructor(RenderWindow &window) {
 			level[i][j] = '0';
 		}
 	}
-
+	//////////////////////////////////
+	level[11][25] = '1';
+	level[11][24] = '1';
+	level[11][23] = '1';
+	level[12][23] = '1';
+	level[13][23] = '1';
+	level[14][23] = '1';
+	level[14][24] = '1';
+	level[14][25] = '1';
+	level[12][24] = 'a';
+	level[13][24] = 'b';
+	level[12][25] = 'c';
+	level[13][25] = 'd';
+	/////////////////////////////////
 
 	Sprite tileMap[26][26] = { black };
+
+	for (int i = 0; i < 26; i++) {
+		for (int j = 0; j < 26; j++) {
+			switch (level[i][j]) {
+				case '0':
+					tileMap[i][j] = black;
+					break;
+				case '1':
+					tileMap[i][j] = brick;
+					break;
+				case '2':
+					tileMap[i][j] = steel;
+					break;
+				case '3':
+					tileMap[i][j] = water;
+					break;
+				case '4':
+					tileMap[i][j] = green;
+					break;
+				case '5':
+					tileMap[i][j] = ice;
+					break;
+				case 'a':
+					tileMap[i][j] = base_a;
+					break;
+				case 'b':
+					tileMap[i][j] = base_b;
+					break;
+				case 'c':
+					tileMap[i][j] = base_c;
+					break;
+				case 'd':
+					tileMap[i][j] = base_d;
+					break;
+			}
+			tileMap[i][j].setPosition(i * 24, j * 24);
+			tileMap[i][j].setScale(3, 3);
+
+		}
+	}
+
 
 	std::vector <VertexArray*> grid(51);
 	std::vector<VertexArray*>::iterator ptr;
@@ -359,15 +462,22 @@ void Game::Constructor(RenderWindow &window) {
 		{
 			sf::Vector2i position = sf::Mouse::getPosition(window);
 
-			if (position.x > 0 && position.x < 624 && position.y>0 && position.y < 624) {
-				int x = (int)position.x / 24;
-				int y = (int)position.y / 24;
-				level[x][y] = state;
-				tileMap[x][y] = state_sprite_small;
-				tileMap[x][y].setPosition(x * 24, y * 24);
-				tileMap[x][y].setScale(3, 3);
+			if (position.x > 0 && position.x < 624 && position.y>0 && position.y < 624 ) {
+				if ((position.x > 11 * 24-1 && position.y > 23 * 24-1 && position.x < 15 * 24+1) || (position.x > 0 * 24 - 1 && position.y < 2 * 24 + 1 && position.x < 2 * 24 + 1) 
+					|| (position.x > 12 * 24 - 1 && position.y < 2 * 24 + 1 && position.x < 14 * 24 + 1) || (position.x > 24 * 24 - 1 && position.y < 2 * 24 + 1 && position.x < 26 * 24 + 1) 
+					|| (position.x > 8 * 24 - 1 && position.y > 24 * 24 - 1 && position.x < 10 * 24 + 1) || (position.x > 16 * 24 - 1 && position.y > 24 * 24 - 1 && position.x < 18 * 24 + 1)) {
+
+				}
+				else {
+					int x = (int)position.x / 24;
+					int y = (int)position.y / 24;
+					level[x][y] = state;
+					tileMap[x][y] = state_sprite_small;
+					tileMap[x][y].setPosition(x * 24, y * 24);
+					tileMap[x][y].setScale(3, 3);
+				}
 			}
-			if (position.x > x_button && position.x<x_button + width_button && position.y>y_button && position.y < y_button + height_button) {
+			if (position.x > x_button_save && position.x<x_button_save + width_button_save && position.y>y_button_save && position.y < y_button_save + height_button_save) {
 				std::ofstream out("source/map/999.txt", std::ios::out);
 				if (out.is_open())
 				{
@@ -382,21 +492,29 @@ void Game::Constructor(RenderWindow &window) {
 				out.close();
 				return;
 			}
+			if (position.x > x_button_back && position.x<x_button_back + width_button_back && position.y>y_button_back && position.y < y_button_back + height_button_back) {
+				return;
+			}
 		}
 
 		sf::Vector2i position = sf::Mouse::getPosition(window);
 
-		int x = save_button.getGlobalBounds().left;
-		int y = save_button.getGlobalBounds().top;
-		int width = save_button.getGlobalBounds().width;
-		int height = save_button.getGlobalBounds().height;
-		if (position.x > x_button && position.x<x_button + width_button && position.y>y_button && position.y < y_button + height_button) {
+		if (position.x > x_button_save && position.x<x_button_save + width_button_save && position.y>y_button_save && position.y < y_button_save + height_button_save) {
 			save_button.setFillColor(Color::Red);
 			save.setFillColor(Color::White);
 		}
 		else {
 			save_button.setFillColor(Color::Black);
 			save.setFillColor(Color::White);
+		}
+
+		if (position.x > x_button_back && position.x<x_button_back + width_button_back && position.y>y_button_back && position.y < y_button_back + height_button_back) {
+			back_button.setFillColor(Color::Red);
+			back.setFillColor(Color::White);
+		}
+		else {
+			back_button.setFillColor(Color::Black);
+			back.setFillColor(Color::White);
 		}
 
 		switch (state) {
@@ -439,6 +557,10 @@ void Game::Constructor(RenderWindow &window) {
 		}
 		window.draw(save_button);
 		window.draw(save);
+		window.draw(back_button);
+		window.draw(back);
+		window.draw(block_highlight);
+		window.draw(text_highlight);
 		window.draw(state_sprite);
 		window.display();
 

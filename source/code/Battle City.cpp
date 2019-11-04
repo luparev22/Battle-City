@@ -7,6 +7,7 @@
 #include "collision.h"
 #include <fstream>
 #include "GameManager.h"
+//#include <windows.h>
 using namespace sf;
 
 
@@ -14,6 +15,12 @@ using namespace sf;
 
 
 int main() {
+
+	//HWND hWnd = GetConsoleWindow();
+	//ShowWindow(hWnd, SW_SHOW);
+
+
+	
 	srand(time(NULL));
 	int wx = 720, wy = 624;
 	RenderWindow window(VideoMode(wx, wy), "Battle City");
@@ -61,6 +68,14 @@ int main() {
 	player_2.setString("2 PLAYER");
 	player_2.setPosition(player_1.getGlobalBounds().left , player_1.getGlobalBounds().top + player_1.getGlobalBounds().height+20);
 	player_2.setCharacterSize(17);
+	player_2.setFillColor(Color(99, 99, 99));
+
+	VertexArray line(sf::Lines,2);
+	line[0].position = sf::Vector2f(player_2.getGlobalBounds().left, player_2.getGlobalBounds().top+ player_2.getGlobalBounds().height/2);
+	line[1].position = sf::Vector2f(player_2.getGlobalBounds().left+ player_2.getGlobalBounds().width, player_2.getGlobalBounds().top + player_2.getGlobalBounds().height / 2);
+	
+	line[0].color = Color(99, 99, 99);
+	line[1].color = Color(99, 99, 99);
 
 	Text constructor;
 
@@ -147,6 +162,7 @@ int main() {
 		for (auto i: texts) {
 			window.draw(*i);
 		}
+		window.draw(line);
 		window.draw(all_rights);
 		window.display();
 	}
