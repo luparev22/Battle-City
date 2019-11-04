@@ -34,7 +34,8 @@ private:
 public:
 	int getX() { return x; };
 	int getY() { return y; };
-	bool getDrive() { return isDriveable; };
+     	bool getDrive() { return isDriveable; };
+	bool getBreakable() { return isBreakable; };
 	IntRect getRect() { return IntRect(x, y, 48, 48); };
 	int getLayout() { return layout; };
 	Sprite* getSprite() { return &sprite; };

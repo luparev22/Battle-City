@@ -11,7 +11,7 @@ Entity::Entity(Image image, std::list <Entity*> *entities, int x, int y, int x_i
 
 }
 
-Tank::Tank(Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H) :Entity(image,entities, x, y, x_image, y_image, W, H), speed(4), tankLevel(3) 
+Tank::Tank(Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H) :Entity(image,entities, x, y, x_image, y_image, W, H), speed(4), tankLevel(0) 
 {
 	setDirection('u');
 }
@@ -23,11 +23,13 @@ void Tank::shoot(Image image) {
 
 PlayerTank::PlayerTank(Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H) : Tank(image,entities, x, y, x_image, y_image, W, H) {
 	setName("Player");
+	setSpeed(6);
 	getSprite()->setTextureRect(IntRect(0, 16 * getTankLevel(), 16, 16));
 };
 
 EnemyTank::EnemyTank(Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H) : Tank(image,entities, x, y, x_image, y_image, W, H) {
 	setName("Enemy");
+	setSpeed(4);
 	getSprite()->setTextureRect(IntRect(128, 16 * getTankLevel(), 16, 16));
 };
 
@@ -43,21 +45,29 @@ Bullet::Bullet(Tank *player, Image image, std::list <Entity*> *entities, int x, 
 			getSprite()->setTextureRect(IntRect(323, 102, 3, 4));
 			setX(player->getX() + 19);
 			setY(player->getY() + 16);
+			setX2(getX() + 9);
+			setY2(getY());
 			break;
 		case 'd':
 			getSprite()->setTextureRect(IntRect(339, 102, 3, 4));
 			setX(player->getX() + 19);
 			setY(player->getY() + 16);
+			setX2(getX() + 9);
+			setY2(getY());
 			break;
 		case 'l':
 			getSprite()->setTextureRect(IntRect(330, 102, 4, 3));
 			setX(player->getX() + 16);
 			setY(player->getY() + 19);
+			setX2(getX());
+			setY2(getY()+9);
 			break;
 		case 'r':
 			getSprite()->setTextureRect(IntRect(346, 102, 4, 3));
 			setX(player->getX() + 16);
 			setY(player->getY() + 19);
+			setX2(getX());
+			setY2(getY()+9);
 			break;
 	}
 
@@ -67,18 +77,22 @@ void Bullet::update(float dt) {
 	switch (getDirection()) {
 		case 'u':
 			setY(getY() - speed);
+			setY2(getY2() - speed);
 			break;
 		case 'd':
 			setY(getY() + speed);
+			setY2(getY2() + speed);
 			break;
 		case 'l':
 			setX(getX() - speed);
+			setX2(getX2() - speed);
 			break;
 		case 'r':
 			setX(getX() + speed);
+			setX2(getX2() + speed);
 			break;
 		}
-		if (getX() > 624 || getX() < 0 || getY() < 0-12 || getY() > 624+12) {
+		if (getX() > 624-16 || getX() < 0+16 || getY() < 0+16 || getY() > 624-16) {
 			setAlive(false);
 			getFather()->setReload(false);
 		}
@@ -102,7 +116,8 @@ void Bullet::update(float dt) {
 					this->setAlive(false);
 					getFather()->setReload(false);
 				}
-			}else if (father->getName() == "Enemy") {
+			//TO KILL PLAYER PLACE "ENEMY"
+			}else if (father->getName() == "loli4") {
 				if ((*it) == this)continue;
 				if ((*it)->getName()=="Enemy")continue;
 				if (this->getRect().intersects((*it)->getRect())) {
@@ -179,37 +194,149 @@ void PlayerTank::update(float dt) {
 	setX(getX());
 	setY(getY());
 
+
+
+	std::list <Entity*> entities = *getEntities();
+	std::list <Entity*>::iterator it;
+
+	IntRect lol;
+
+	for (it = entities.begin(); it != entities.end(); it++)
+	{
+		if (this == *it || (*it)->getName() == "Bullet")continue;
+		if (this->getRect().intersects((*it)->getRect(), lol)) {
+			if (this->getDirection() == 'r') {
+				this->setX(lol.left - 48);
+			}
+			else if (this->getDirection() == 'l') {
+				this->setX(lol.left + lol.width);
+			}
+			else if (this->getDirection() == 'u') {
+				this->setY(lol.top + lol.height);
+			}
+			else if (this->getDirection() == 'd') {
+				this->setY(lol.top - 48);
+			}
+		}
+
+	}
+
+
+
+
+
+
+
+
 }
 
 void EnemyTank::changeDirection() {
-	if (getDirection() == 'l')setDirection('d');
-	else if (getDirection() == 'd')setDirection('r');
-	else if (getDirection() == 'r')setDirection('u');
-	else if (getDirection() == 'u')setDirection('l');
+
+	if (getDirection() == 'l') {
+		switch (rand() % 3) {
+			case 0:
+				setDirection('d');
+				break;
+			case 1:
+				setDirection('u');
+				break;
+			case 2:
+				setDirection('r');
+				break;
+		}
+	}
+	else if (getDirection() == 'd'){
+		switch (rand() % 3) {
+		case 0:
+			setDirection('u');
+			break;
+		case 1:
+			setDirection('r');
+			break;
+		case 2:
+			setDirection('l');
+			break;
+		}
+	}
+	else if (getDirection() == 'r'){
+		switch (rand() % 3) {
+		case 0:
+			setDirection('d');
+			break;
+		case 1:
+			setDirection('u');
+			break;
+		case 2:
+			setDirection('l');
+			break;
+		}
+	}
+	else if (getDirection() == 'u') {
+		switch (rand() % 3) {
+		case 0:
+			setDirection('d');
+			break;
+		case 1:
+			setDirection('r');
+			break;
+		case 2:
+			setDirection('l');
+			break;
+		}
+	}
 }
 
 void EnemyTank::update(float dt) {
-
+	
 	if (rand() % 32 == 0 && !getReload())this->shoot(getTexture().copyToImage());
 
 	if (getDirection() == 'u' && getY() == 0) {
-		setDirection('l');
+		switch (rand() % 2) {
+		case 0:
+			setDirection('r');
+			break;
+		case 1:
+			setDirection('d');
+			break;
+		}
 	}
 	if (getDirection() == 'l' && getX() == 0) {
-		setDirection('d');
+		switch (rand() % 2) {
+		case 0:
+			setDirection('u');
+			break;
+		case 1:
+			setDirection('l');
+			break;
+		}
 	}
 	if (getDirection() == 'd' && getY() == 624 - 48) {
-		setDirection('r');
+		switch (rand() % 2) {
+		case 0:
+			setDirection('r');
+			break;
+		case 1:
+			setDirection('u');
+			break;
+		}
 	}
 	if (getDirection() == 'r' && getX() == 624 - 48) {
-		setDirection('u');
+		switch (rand() % 2) {
+		case 0:
+			setDirection('u');
+			break;
+		case 1:
+			setDirection('l');
+			break;
+		}
 	}
 	
-	if ((int)getX() % 48 == 0 && (int)getY() % 48 == 0) {
+	if ((int)getX() % 24 == 0 && (int)getY() % 24 == 0) {
 
-		if(rand()%8==0)changeDirection();
+		if(rand()%16==0)changeDirection();
 
 	}
+	
 	switch (getDirection()) {
 	case 'u':
 		setDirection('u');
@@ -276,6 +403,46 @@ void EnemyTank::update(float dt) {
 	setX(getX());
 	setY(getY());
 	
-	this->setSpeed(4);
+
+	std::list <Entity*> entities = *getEntities();
+	std::list <Entity*>::iterator it;
+
+	IntRect lol;
+
+	for (it = entities.begin(); it != entities.end(); it++)
+	{
+		if (this == *it || (*it)->getName()=="Bullet")continue;
+		if (this->getRect().intersects((*it)->getRect(), lol)) {
+			if (this->getDirection() == 'r') {
+				this->setX(lol.left - 48);
+			}
+			else if (this->getDirection() == 'l') {
+				this->setX(lol.left + lol.width);
+			}
+			else if (this->getDirection() == 'u') {
+				this->setY(lol.top + lol.height);
+			}
+			else if (this->getDirection() == 'd') {
+				this->setY(lol.top - 48);
+			}
+			if (rand() % 16 == 0)
+				switch (this->getDirection()) {
+					case 'l':
+						this->setDirection('r');
+						break;
+					case 'r':
+						this->setDirection('l');
+						break;
+					case 'd':
+						this->setDirection('u');
+						break;
+					case 'u':
+						this->setDirection('d');
+						break;
+				}
+		}
+
+	}
+
 
 }
