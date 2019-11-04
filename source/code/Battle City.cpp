@@ -42,7 +42,7 @@ void game() {
 	sprite.createMaskFromColor(sf::Color::Color(0, 0, 1), 0);
 
 	LevelManager lm(sprite);
-	lm.ReadMap(999);
+	lm.ReadMap(1);
 	lm.DrawMap();
 
 	std::list <Entity*> entities;

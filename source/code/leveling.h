@@ -10,7 +10,7 @@ class Tile;
 
 class LevelManager {
 private:
-	char currentMap[13][13];
+	char currentMap[26][26];
 	Image image;
 public:
 	std::vector<Tile*> tiles;
@@ -34,11 +34,14 @@ private:
 public:
 	int getX() { return x; };
 	int getY() { return y; };
-     	bool getDrive() { return isDriveable; };
-	bool getBreakable() { return isBreakable; };
+	bool getDrive() { return isDriveable; };
+	bool getBreak() { return isBreakable; };
 	IntRect getRect() { return IntRect(x, y, 48, 48); };
 	int getLayout() { return layout; };
 	Sprite* getSprite() { return &sprite; };
+	void setBreak(bool isBreak) { isBreakable = isBreak; };
+	void setDrive(bool isDrive) { isDriveable = isDrive; };
+	void setSprite(Sprite newSprite) { sprite = newSprite; };
 	Tile(Image img, int x, int y, int x_image, int y_image, int W, int H,bool breakable,bool drive,int layout)
 	: x(x), y(y),isBreakable(breakable),isDriveable(drive),layout(layout)
 	{
