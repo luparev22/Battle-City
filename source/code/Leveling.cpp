@@ -36,16 +36,16 @@ void LevelManager::DrawMap(){
 				tile = new Tile(image, j * 24, i * 24, 16 * 16, 16*4+8, 8, 8, false, false, 0);
 				break;
 			case '3':
-				tile = new Tile(image, j * 48, i * 48, 16 * 16, 16 * 2, 16, 16, false, false, 0);
+				tile = new Tile(image, j * 24, i * 24, 16 * 16, 16 * 5, 8, 8, false, false, 0);
 				break;
 			case '4':
-				tile = new Tile(image, j * 48, i * 48, 17 * 16, 16 * 2, 16, 16, false, true, 1);
+				tile = new Tile(image, j * 24, i * 24, 16 * 16 + 8, 16 * 4+8, 8, 8, false, true, 1);
 				break;
 			case '5':
-				tile = new Tile(image, j * 48, i * 48, 18 * 16, 16 * 2, 16, 16, false, true, 0);
+				tile = new Tile(image, j * 24, i * 24, 17 * 16, 16 * 4+8, 8, 8, false, true, 0);
 				break;
 			case '9':
-				tile = new Tile(image, j * 48, i * 48, 22 * 16, 0, 16, 16, false, true, 0);
+				tile = new Tile(image, j * 24, i * 24, 22 * 16, 0, 16, 16, false, true, 0);
 				break;
 			}
 			tiles.push_back(tile);

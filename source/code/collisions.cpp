@@ -19,7 +19,6 @@ void collisions(Entity* player,LevelManager lm) {
 	y /= globalDel;
 	if (player->getName() == "Bullet") {
 		if (player->getDirection() == 'u' && x < 25) {
-			std::cout << lm.tiles[26 * y + x]->getDrive() << lm.tiles[26 * y + x + 1]->getDrive() << std::endl;
 			if (!lm.tiles[26 * y + x]->getDrive() || !lm.tiles[26 * y + x + 1]->getDrive()) {
 				if (lm.tiles[26 * y + x]->getBreak()) {
 					lm.tiles[26 * y + x]->setSprite(*lm.tiles[0]->getSprite());

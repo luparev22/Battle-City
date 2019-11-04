@@ -5,6 +5,7 @@
 #include <list>
 #include "leveling.h"
 #include "collision.h"
+#include <fstream>
 
 using namespace sf;
 
@@ -42,7 +43,7 @@ void game() {
 	sprite.createMaskFromColor(sf::Color::Color(0, 0, 1), 0);
 
 	LevelManager lm(sprite);
-	lm.ReadMap(1);
+	lm.ReadMap(999);
 	lm.DrawMap();
 
 	std::list <Entity*> entities;
@@ -70,6 +71,11 @@ void game() {
 	*/
 
 	bool isMusicOn = true;
+
+	bool isLeftPress = false;
+	bool isRightPress = false;
+	bool isUpPress = false;
+	bool isDownPress = false;
 
 	entities.push_back(new EnemyTank(sprite, &entities, 2 * 48, 96, 0, 0, 16, 16));
 	entities.push_back(new EnemyTank(sprite, &entities, 6 * 48, 96, 0, 0, 16, 16));
@@ -99,18 +105,21 @@ void game() {
 			player.update(dt);
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+
 			if (sound_always.getBuffer() == &buf_motor)
 				sound_always.setBuffer(buf_move);
 			player.setDirection('r');
 			player.update(dt);
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+
 			if (sound_always.getBuffer() == &buf_motor)
 				sound_always.setBuffer(buf_move);
 			player.setDirection('u');
 			player.update(dt);
 		}
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+
 			if (sound_always.getBuffer() == &buf_motor)
 				sound_always.setBuffer(buf_move);
 			player.setDirection('d');
@@ -135,6 +144,7 @@ void game() {
 			*/
 			if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Left)
 			{
+	
 				if (sound_always.getBuffer() == &buf_move)
 					sound_always.setBuffer(buf_motor);
 				int tile = player.getX() / 24;
@@ -144,6 +154,7 @@ void game() {
 			}
 			else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Right)
 			{
+
 				if (sound_always.getBuffer() == &buf_move)
 					sound_always.setBuffer(buf_motor);
 				int tile = player.getX() / 24;
@@ -153,6 +164,8 @@ void game() {
 			}
 			else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Up)
 			{
+			
+
 				if (sound_always.getBuffer() == &buf_move)
 					sound_always.setBuffer(buf_motor);
 				int tile = player.getY() / 24;
@@ -162,6 +175,8 @@ void game() {
 			}
 			else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Down)
 			{
+
+			
 				if (sound_always.getBuffer() == &buf_move)
 					sound_always.setBuffer(buf_motor);
 				int tile = player.getY() / 24;
@@ -259,9 +274,38 @@ void constructor() {
 	state_sprite.setPosition(640, 20);
 	state_sprite.setTextureRect(black.getTextureRect());
 
+	Font font;
+	font.loadFromFile("C:/WINDOWS/Fonts/arial.ttf");
+
+	Text save;
+	save.setFont(font);
+	save.setString("SAVE");
+	save.setPosition(650, 570);
+	save.setCharacterSize(17);
 
 
-	char level[26][26] = { 0 };
+	RectangleShape save_button;
+	save_button.setPosition(save.getGlobalBounds().left-10, save.getGlobalBounds().top-10);
+	save_button.setSize(Vector2f(save.getGlobalBounds().width+20, save.getGlobalBounds().height+20));
+	save_button.setOutlineColor(Color::White);
+	save_button.setFillColor(Color::Black);
+	save_button.setOutlineThickness(1);
+	
+	int x_button = save_button.getGlobalBounds().left;
+	int y_button = save_button.getGlobalBounds().top;
+	int width_button = save_button.getGlobalBounds().width;
+	int height_button = save_button.getGlobalBounds().height;
+
+	char level[26][26];
+
+	for (int i = 0; i < 26; i++) {
+		for (int j = 0; j < 26; j++) {
+			level[i][j] = '0';
+		}
+	}
+
+	std::cout << level[2][2];
+
 
 	Sprite tileMap[26][26] = { black };
 
@@ -281,7 +325,7 @@ void constructor() {
 		}
 	}
 
-	char state = 0;
+	char state = '0';
 
 	while (window.isOpen()) {
 		float dt = clock.restart().asSeconds();
@@ -312,9 +356,6 @@ void constructor() {
 				else if (event.key.code == sf::Keyboard::Num6) {
 					state = '5';
 				}
-				else if (event.key.code == sf::Keyboard::S) {
-					state = '5';
-				}
 			}
 		}
 
@@ -330,6 +371,35 @@ void constructor() {
 				tileMap[x][y].setPosition(x * 24, y * 24);
 				tileMap[x][y].setScale(3, 3);
 			}
+			if (position.x > x_button && position.x<x_button + width_button && position.y>y_button && position.y < y_button + height_button) {
+				std::ofstream out("source/map/999.txt", std::ios::out);
+				if (out.is_open())
+				{
+					for (int i = 0; i < 26; i++) {
+						for (int j = 0; j < 26; j++) {
+							out << level[j][i];
+							out << ' ';
+						}
+						out << '\n';
+					}
+				}
+				out.close();
+			}
+		}
+
+		sf::Vector2i position = sf::Mouse::getPosition(window);
+
+		int x = save_button.getGlobalBounds().left;
+		int y = save_button.getGlobalBounds().top;
+		int width = save_button.getGlobalBounds().width;
+		int height = save_button.getGlobalBounds().height;
+		if (position.x > x_button && position.x<x_button + width_button && position.y>y_button && position.y < y_button + height_button) {
+			save_button.setFillColor(Color::Red);
+			save.setFillColor(Color::White);
+		}
+		else {
+			save_button.setFillColor(Color::Black);
+			save.setFillColor(Color::White);
 		}
 
 		switch (state) {
@@ -370,6 +440,8 @@ void constructor() {
 				window.draw(tileMap[i][j]);
 			}
 		}
+		window.draw(save_button);
+		window.draw(save);
 		window.draw(state_sprite);
 		window.display();
 
