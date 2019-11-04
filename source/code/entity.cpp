@@ -205,7 +205,7 @@ void EnemyTank::update(float dt) {
 		setDirection('u');
 	}
 	
-	if ((int)getX() % 48 == 0 && (int)getY() % 48 == 0) {
+	if ((int)getX() % 24 == 0 && (int)getY() % 24 == 0) {
 
 		if(rand()%8==0)changeDirection();
 

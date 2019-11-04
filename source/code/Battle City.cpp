@@ -203,7 +203,9 @@ int main() {
 
 		*/
 		collisions(&player,lm);
-
+		for (auto i : entities) {
+			collisions(i, lm);
+		}
 
 		window.clear();
 
