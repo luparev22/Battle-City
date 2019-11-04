@@ -10,11 +10,17 @@
 #include <string>
 #include "entity.h"
 #include "collision.h"
+
+
 using namespace sf;
 
 class Game {
+private:
+	int health = 0;
 public:
-	void StartGame(RenderWindow &window);
+	int getHealth() { return health; };
+	void setHealth(int hp) { health = hp; };
+	void StartGame(RenderWindow &window,int level);
 	void Constructor(RenderWindow &window);
 	void Quit();
 };

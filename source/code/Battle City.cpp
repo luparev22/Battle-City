@@ -121,7 +121,7 @@ int main() {
 					case Keyboard::Enter:
 						switch (currentIndex) {
 							case 0:
-								game.StartGame(window);
+								game.StartGame(window,1);
 								break;
 							case 2:
 								game.Constructor(window);
