@@ -8,14 +8,80 @@
 #include "entity.h"
 #include "collision.h"
 #include "GameManager.h"
-
+//376 136
+//384 136
+//376 144
+//376 184 16 16
 using namespace sf;
 
-void Game::StartGame(RenderWindow &window) {
+void DrawSideBar(Image sprite , Font stageFont,int health,int level, RenderWindow& window) {
+	std::list<Sprite> enemesSprite;
+	Texture texture;
+	texture.loadFromImage(sprite);
+
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 2; j++) {
+			Sprite spriteMiniTank;
+			spriteMiniTank.setTexture(texture);
+			spriteMiniTank.setTextureRect(IntRect(320, 192, 8, 8));
+			spriteMiniTank.setPosition(648 + 24 * j, 24 + 24 * i);
+			spriteMiniTank.setScale(3, 3);
+			enemesSprite.push_back(spriteMiniTank);
+		}
+	}
+
+	Sprite firstPlayerSprite;
+	firstPlayerSprite.setTexture(texture);
+	firstPlayerSprite.setTextureRect(IntRect(376, 136, 16, 8));
+	firstPlayerSprite.setPosition(648, 336);
+	firstPlayerSprite.setScale(3, 3);
+
+	Sprite firstPlayerTankSprite;
+	firstPlayerTankSprite.setTexture(texture);
+	firstPlayerTankSprite.setTextureRect(IntRect(376, 144, 8, 8));
+	firstPlayerTankSprite.setPosition(648, 360);
+	firstPlayerTankSprite.setScale(3, 3);
+
+	Text Life;
+	Life.setFont(stageFont);
+	Life.setString(std::to_string(health));
+	Life.setCharacterSize(20);
+	Life.setPosition(678, 364);
+	Life.setFillColor(Color(0, 0, 1));
+
+	Sprite Flag;
+	Flag.setTexture(texture);
+	Flag.setTextureRect(IntRect(376, 184, 16, 16));
+	Flag.setPosition(648, 480);
+	Flag.setScale(3, 3);
+
+	Text FlagText;
+	FlagText.setFont(stageFont);
+	FlagText.setString(std::to_string(level));
+	FlagText.setCharacterSize(20);
+	FlagText.setPosition(658, 528);
+	FlagText.setFillColor(Color(0, 0, 1));
+
+	RectangleShape sideBar;
+	sideBar.setFillColor(Color(99, 99, 99));
+	sideBar.setPosition(624, 0);
+	sideBar.setSize(Vector2f(96, 624));
+
+	window.draw(sideBar);
+	for (auto i : enemesSprite) {
+		window.draw(i);
+	}
+	window.draw(firstPlayerTankSprite);
+	window.draw(firstPlayerSprite);
+	window.draw(Life);
+	window.draw(Flag);
+	window.draw(FlagText);
+}
+
+void Game::StartGame(RenderWindow &window,int level) {
 	sf::Clock clock;
 	int wx = 720, wy = 624;
 	int stage = 1;
-	
 	Font stageFont;
 	stageFont.loadFromFile("source/fonts/PressStart2P.ttf");
 
@@ -50,13 +116,9 @@ void Game::StartGame(RenderWindow &window) {
 	sprite.loadFromFile("source/img/sprites.png");
 	sprite.createMaskFromColor(sf::Color::Color(0, 0, 1), 0);
 
-	RectangleShape sideBar;
-	sideBar.setFillColor(Color(99, 99, 99));
-	sideBar.setPosition(624, 0);
-	sideBar.setSize(Vector2f(96, 624));
 
 	LevelManager lm(sprite);
-	lm.ReadMap(1);
+	lm.ReadMap(level);
 	lm.DrawMap();
 
 	std::list <Entity*> entities;
@@ -66,9 +128,13 @@ void Game::StartGame(RenderWindow &window) {
 	PlayerTank player(sprite, &entities, 4 * 48, 12 * 48, 0, 0, 16, 16);
 	entities.push_back(&player);
 
-	int enemies = 8;
+	int enemies = 20;
 	int enemies_on_map = 0;
 
+
+
+	std::vector<EnemyTank> enemes;
+	
 	//entities.push_back(new EnemyTank(sprite, &entities, 0, 0, 0, 0, 16, 16));
 	//entities.push_back(new EnemyTank(sprite, &entities, 6*48, 0, 0, 0, 16, 16));
 	//entities.push_back(new EnemyTank(sprite, &entities, 12 * 48, 0, 0, 0, 16, 16));
@@ -209,8 +275,7 @@ void Game::StartGame(RenderWindow &window) {
 
 
 		window.clear();
-		window.draw(sideBar);
-
+		DrawSideBar(sprite, stageFont, health, level, window);
 		for (auto i : lm.tiles) {
 			if (i->getLayout() != 1)
 				window.draw(*(i->getSprite()));
