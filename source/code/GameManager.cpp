@@ -8,27 +8,12 @@
 #include "entity.h"
 #include "collision.h"
 #include "GameManager.h"
-//376 136
-//384 136
-//376 144
-//376 184 16 16
+
 using namespace sf;
 
 void DrawSideBar(Image sprite , Font stageFont,int health,int level, RenderWindow& window) {
-	std::list<Sprite> enemesSprite;
 	Texture texture;
 	texture.loadFromImage(sprite);
-
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 2; j++) {
-			Sprite spriteMiniTank;
-			spriteMiniTank.setTexture(texture);
-			spriteMiniTank.setTextureRect(IntRect(320, 192, 8, 8));
-			spriteMiniTank.setPosition(648 + 24 * j, 24 + 24 * i);
-			spriteMiniTank.setScale(3, 3);
-			enemesSprite.push_back(spriteMiniTank);
-		}
-	}
 
 	Sprite firstPlayerSprite;
 	firstPlayerSprite.setTexture(texture);
@@ -68,9 +53,6 @@ void DrawSideBar(Image sprite , Font stageFont,int health,int level, RenderWindo
 	sideBar.setSize(Vector2f(96, 624));
 
 	window.draw(sideBar);
-	for (auto i : enemesSprite) {
-		window.draw(i);
-	}
 	window.draw(firstPlayerTankSprite);
 	window.draw(firstPlayerSprite);
 	window.draw(Life);
@@ -131,46 +113,88 @@ void Game::StartGame(RenderWindow &window,int level) {
 	int enemies = 20;
 	int enemies_on_map = 0;
 
+	std::list<Sprite> enemesSprite;
+	Texture texture;
+	texture.loadFromImage(sprite);
 
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 2; j++) {
+			Sprite spriteMiniTank;
+			spriteMiniTank.setTexture(texture);
+			spriteMiniTank.setTextureRect(IntRect(320, 192, 8, 8));
+			spriteMiniTank.setPosition(648 + 24 * j, 24 + 24 * i);
+			spriteMiniTank.setScale(3, 3);
+			enemesSprite.push_back(spriteMiniTank);
+		}
+	}
 
 	std::vector<EnemyTank> enemes;
 	
-	//entities.push_back(new EnemyTank(sprite, &entities, 0, 0, 0, 0, 16, 16));
-	//entities.push_back(new EnemyTank(sprite, &entities, 6*48, 0, 0, 0, 16, 16));
-	//entities.push_back(new EnemyTank(sprite, &entities, 12 * 48, 0, 0, 0, 16, 16));
-	/*
-	entities.push_back(new EnemyTank(sprite, &entities, 240, 96, 0, 0, 16, 16));
-	entities.push_back(new EnemyTank(sprite, &entities, 288, 96, 0, 0, 16, 16));
-	entities.push_back(new EnemyTank(sprite, &entities, 336, 96, 0, 0, 16, 16));
-	entities.push_back(new EnemyTank(sprite, &entities, 384, 96, 0, 0, 16, 16));
-	entities.push_back(new EnemyTank(sprite, &entities, 432, 96, 0, 0, 16, 16));
-	entities.push_back(new EnemyTank(sprite, &entities, 480, 96, 0, 0, 16, 16));
-	entities.push_back(new EnemyTank(sprite, &entities, 528, 96, 0, 0, 16, 16));
-	entities.push_back(new EnemyTank(sprite, &entities, 576, 96, 0, 0, 16, 16));
-	*/
-
 	bool isMusicOn = true;
-
-	entities.push_back(new EnemyTank(sprite, &entities, 2 * 48, 96, 0, 0, 16, 16));
-	entities.push_back(new EnemyTank(sprite, &entities, 6 * 48, 96, 0, 0, 16, 16));
-	entities.push_back(new EnemyTank(sprite, &entities, 10 * 48, 96, 0, 0, 16, 16));
-	enemies_on_map += 3;
-
+	
+	bool spawnPoint1 = true, spawnPoint2 = true, spawnPoint3 = true;
+	
+	Sprite anim[4];
+	for (int i = 0; i < 4; i++) {
+		anim[i].setTexture(texture);
+		anim[i].setTextureRect(IntRect(256+16*i, 96, 16 , 16));
+		anim[i].setPosition(0,0);
+		anim[i].setScale(3, 3);
+	}
+	int curInd=0,times=0,prevSpawn=-1;
+	bool nowSpawning = false;
 
 	while (window.isOpen()) {
+		if (times > 2) {
+			nowSpawning = false;
+			times = 0;
+			curInd = 0;
+			entities.push_back(new EnemyTank(sprite, &entities, anim[0].getPosition().x, anim[0].getPosition().y, 0, 0, 16, 16));
+			enemies_on_map += 1;
+			if(!enemesSprite.empty())
+			enemesSprite.pop_back();
+		}
+
+		if (enemies_on_map < 4&& !enemesSprite.empty()) {
+			if (!nowSpawning) {
+				int r = rand() % 3;
+				if (r != prevSpawn) {
+					switch (r)
+					{
+					case 0:
+						for (int i = 0; i < 4; i++) {
+							anim[i].setPosition(0, 0);
+						}
+						break;
+					case 1:
+						for (int i = 0; i < 4; i++) {
+							anim[i].setPosition(48 * 6, 0);
+						}
+						break;
+					case 2:
+						for (int i = 0; i < 4; i++) {
+							anim[i].setPosition(48 * 12, 0);
+						}
+						break;
+					}
+					prevSpawn = r;
+					nowSpawning = true;
+				}
+			}
+			else {
+				curInd++;
+				if (curInd >= 11) {
+					times++;
+					curInd = 0;
+				}
+			}
+		}
+
 		float dt = clock.restart().asSeconds();
 		Event event;
 		if (sound_always.getStatus() == Sound::Status::Stopped) {
 			sound_always.play();
 		}
-		/*
-		if (enemies > 0) {
-			while (enemies_on_map < 3) {
-				entities.push_back(new EnemyTank(sprite, &entities, 0, 0, 0, 0, 16, 16));
-				enemies_on_map++;
-			}
-		}
-		*/
 
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
@@ -275,6 +299,7 @@ void Game::StartGame(RenderWindow &window,int level) {
 
 
 		window.clear();
+
 		DrawSideBar(sprite, stageFont, health, level, window);
 		for (auto i : lm.tiles) {
 			if (i->getLayout() != 1)
@@ -286,6 +311,11 @@ void Game::StartGame(RenderWindow &window,int level) {
 		for (auto i : lm.tiles) {
 			if (i->getLayout() == 1)
 				window.draw(*(i->getSprite()));
+		}
+		if (nowSpawning)
+			window.draw(anim[curInd / 3]);
+		for (auto i : enemesSprite) {
+			window.draw(i);
 		}
 		window.display();
 
