@@ -14,7 +14,8 @@ using namespace sf;
 
 class Game {
 public:
-	void StartGame();
+	void StartGame(RenderWindow &window);
+	void Constructor(RenderWindow &window);
 	void Quit();
 };
 

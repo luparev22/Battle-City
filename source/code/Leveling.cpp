@@ -23,7 +23,6 @@ void LevelManager::DrawMap(){
 	for (int i = 0; i < 26; i++) {
 		for (int j = 0; j < 26; j++) {
 			Tile* tile;
-			std::cout << currentMap[i][j] << " ";
 			switch (currentMap[i][j]) {
 			case '0':
 				tile = new Tile(image, j * 24, i * 24, 22 * 16, 0, 8, 8, false, true, 0);
@@ -58,6 +57,5 @@ void LevelManager::DrawMap(){
 			}
 			tiles.push_back(tile);
 		}
-		std::cout << std::endl;
 	}
 }
