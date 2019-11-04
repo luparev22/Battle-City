@@ -168,11 +168,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="source\code\collision.h" />
+    <ClInclude Include="source\code\GameManager.h" />
     <ClInclude Include="source\code\leveling.h" />
     <ClInclude Include="source\code\pch.h" />
     <ClInclude Include="source\code\entity.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\code\GameManager.cpp" />
     <ClCompile Include="source\code\Battle City.cpp" />
     <ClCompile Include="source\code\collisions.cpp" />
     <ClCompile Include="source\code\Leveling.cpp" />
