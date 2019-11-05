@@ -20,7 +20,7 @@ private:
 public:
 	int getHealth() { return health; };
 	void setHealth(int hp) { health = hp; };
-	void StartGame(RenderWindow &window,int level);
+	bool StartGame(RenderWindow &window,int level);
 	void Constructor(RenderWindow &window);
 	void Quit();
 };

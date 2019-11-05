@@ -19,7 +19,7 @@ public:
 	}
 	void ReadMap(int n);
 	void DrawMap();
-	
+	Image getImage() { return image; };
 };
 
 class Tile {
@@ -40,8 +40,16 @@ public:
 	int getLayout() { return layout; };
 	Sprite* getSprite() { return &sprite; };
 	void setBreak(bool isBreak) { isBreakable = isBreak; };
+	void setSprite(Sprite& newsprite) { sprite = newsprite; };
 	void setDrive(bool isDrive) { isDriveable = isDrive; };
-	void setSprite(Sprite newSprite) { sprite = newSprite; };
+	void setSprite(Image img, int x_image, int y_image, int W, int H,bool breakable) {
+		texture.loadFromImage(img);
+		isBreakable = breakable;
+		sprite.setTexture(texture);
+		sprite.setTextureRect(IntRect(x_image, y_image, W, H));
+		sprite.setPosition(x, y);
+		sprite.setScale(3, 3);
+	};
 	Tile(Image img, int x, int y, int x_image, int y_image, int W, int H,bool breakable,bool drive,int layout)
 	: x(x), y(y),isBreakable(breakable),isDriveable(drive),layout(layout)
 	{
@@ -51,6 +59,7 @@ public:
 		sprite.setPosition(x, y);
 		sprite.setScale(3, 3);
 	}
+	
 };
 
 #endif

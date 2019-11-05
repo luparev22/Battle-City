@@ -6,7 +6,7 @@
 #include <vector> 
 using namespace sf;
 
-void collisions(Entity* player, LevelManager lm);
+bool collisions(Entity* player, LevelManager lm);
 
 
 #endif

@@ -12,7 +12,14 @@ using namespace sf;
 
 int globalDel = 24;
 
-void collisions(Entity* player,LevelManager lm) {
+void changeBase(LevelManager lm) {
+	lm.tiles[636]->setSprite(lm.getImage(), 20 * 16, 16 * 2, 8, 8, false);
+	lm.tiles[637]->setSprite(lm.getImage(), 20 * 16 + 8, 16 * 2, 8, 8, false);
+	lm.tiles[662]->setSprite(lm.getImage(), 20 * 16, 16 * 2 + 8, 8, 8, false);
+	lm.tiles[663]->setSprite(lm.getImage(), 20 * 16 + 8, 16 * 2 + 8, 8, 8,false);
+}
+
+bool collisions(Entity* player,LevelManager lm) {
 	int x = player->getX();
 	int y = player->getY();
 	x /= globalDel;
@@ -37,11 +44,19 @@ void collisions(Entity* player,LevelManager lm) {
 		if (player->getDirection() == 'd' && y < 25 && x < 25) {
 			if (!lm.tiles[26 * (y + 1) + x]->getDrive() || !lm.tiles[26 * (y + 1) + x + 1]->getDrive()) {
 				if (lm.tiles[26 * (y + 1) + x]->getBreak()) {
+					if (26 * (y + 1) + x == 636 || 26 * (y + 1) + x == 637) {
+						changeBase(lm);
+						return true;
+					}
 					lm.tiles[26 * (y + 1) + x]->setSprite(*lm.tiles[0]->getSprite());
 					lm.tiles[26 * (y + 1) + x]->setBreak(false);
 					lm.tiles[26 * (y + 1) + x]->setDrive(true);
 				}
 				if (lm.tiles[26 * (y + 1) + x + 1]->getBreak()) {
+					if (26 * (y + 1) + x + 1 == 636 || 26 * (y + 1) + x + 1 == 637) {
+						changeBase(lm);
+						return true;
+					}
 					lm.tiles[26 * (y + 1) + x + 1]->setSprite(*lm.tiles[0]->getSprite());
 					lm.tiles[26 * (y + 1) + x + 1]->setBreak(false);
 					lm.tiles[26 * (y + 1) + x + 1]->setDrive(true);
@@ -53,11 +68,19 @@ void collisions(Entity* player,LevelManager lm) {
 		if (player->getDirection() == 'r' && y < 25 && x < 25) {
 			if (!lm.tiles[26 * y + x + 1]->getDrive() || !lm.tiles[26 * (y + 1) + x + 1]->getDrive()) {
 				if (lm.tiles[26 * y + x + 1]->getBreak()) {
+					if (26 * y + x+1 == 636) {
+						changeBase(lm);
+						return true;
+					}
 					lm.tiles[26 * y + x + 1]->setSprite(*lm.tiles[0]->getSprite());
 					lm.tiles[26 * y + x + 1]->setBreak(false);
 					lm.tiles[26 * y + x + 1]->setDrive(true);
 				}
 				if (lm.tiles[26 * (y + 1) + x + 1]->getBreak()) {
+					if (26 * (y + 1) + x+1 == 636 || 26 * (y + 1) + x+1 == 662) {
+						changeBase(lm);
+						return true;
+					}
 					lm.tiles[26 * (y + 1) + x + 1]->setSprite(*lm.tiles[0]->getSprite());
 					lm.tiles[26 * (y + 1) + x + 1]->setBreak(false);
 					lm.tiles[26 * (y + 1) + x + 1]->setDrive(true);
@@ -69,11 +92,19 @@ void collisions(Entity* player,LevelManager lm) {
 		if (player->getDirection() == 'l' && y < 25) {
 			if (!lm.tiles[26 * y + x]->getDrive() || !lm.tiles[26 * (y + 1) + x]->getDrive()) {
 				if (lm.tiles[26 * y + x]->getBreak()) {
+					if (26 * y + x == 637) {
+						changeBase(lm);
+						return true;
+					}
 					lm.tiles[26 * y + x]->setSprite(*lm.tiles[0]->getSprite());
 					lm.tiles[26 * y + x]->setBreak(false);
 					lm.tiles[26 * y + x]->setDrive(true);
 				}
 				if (lm.tiles[26 * (y + 1) + x]->getBreak()) {
+					if (26 * (y + 1) + x  == 637 || 26 * (y + 1) + x == 663) {
+						changeBase(lm);
+						return true;
+					}
 					lm.tiles[26 * (y + 1) + x]->setSprite(*lm.tiles[0]->getSprite());
 					lm.tiles[26 * (y + 1) + x]->setBreak(false);
 					lm.tiles[26 * (y + 1) + x]->setDrive(true);
@@ -109,6 +140,7 @@ void collisions(Entity* player,LevelManager lm) {
 			}
 		}
 	}
+	return false;
 	/*
 	if (!lm.tiles[13 * y + x]->getDrive()) {
 		if (player->getY() - lm.tiles[13 * y + x]->getY() > globalDel/2 && player->getDirection() == 'u') {

@@ -60,16 +60,16 @@ void DrawSideBar(Image sprite , Font stageFont,int health,int level, RenderWindo
 	window.draw(FlagText);
 }
 
-void Game::StartGame(RenderWindow &window,int level) {
+
+bool Game::StartGame(RenderWindow &window,int level) {
 	sf::Clock clock;
 	int wx = 720, wy = 624;
-	int stage = 1;
 	Font stageFont;
 	stageFont.loadFromFile("source/fonts/PressStart2P.ttf");
 
 	Text stageText;
 	stageText.setFont(stageFont);
-	stageText.setString("STAGE " + std::to_string(stage));
+	stageText.setString("STAGE " + std::to_string(level));
 	stageText.setCharacterSize(17);
 	stageText.setPosition((wx - stageText.getGlobalBounds().width) / 2, (wy - stageText.getGlobalBounds().height)/2);
 
@@ -144,7 +144,48 @@ void Game::StartGame(RenderWindow &window,int level) {
 	int curInd=0,times=0,prevSpawn=-1;
 	bool nowSpawning = false;
 
+	int timeToEnd = 0;
+	bool itsTheEnd = false;
+	
+	bool baseDestroyed = false;
+
+	Text GameOver;
+	GameOver.setFont(stageFont);
+	GameOver.setString("GAME OVER");
+	GameOver.setCharacterSize(17);
+	GameOver.setPosition((wx - stageText.getGlobalBounds().width) / 2 - 60, wy - 24);
+	GameOver.setFillColor(Color::Red);
+
+	Text WinText;
+	WinText.setFont(stageFont);
+	WinText.setString("YOU WIN!");
+	WinText.setCharacterSize(17);
+	WinText.setPosition((wx - stageText.getGlobalBounds().width) / 2 - 60, wy - 24);
+	WinText.setFillColor(Color::Green);
+
 	while (window.isOpen()) {
+
+
+		if (itsTheEnd) {
+			if (timeToEnd > 100) {
+				if (!baseDestroyed)
+					return true;
+				else
+					return false;
+			}
+			else {
+				timeToEnd++;
+				if (baseDestroyed) {
+					GameOver.setPosition(GameOver.getPosition().x, GameOver.getPosition().y - 0.5f);
+				}
+				else {
+					WinText.setPosition(WinText.getPosition().x, WinText.getPosition().y - 0.5f);
+				}
+			}
+		}
+		if (enemies <= 0) {
+			itsTheEnd = true;
+		}
 		if (times > 2) {
 			nowSpawning = false;
 			times = 0;
@@ -281,7 +322,10 @@ void Game::StartGame(RenderWindow &window,int level) {
 			Entity* p = *it;
 			if (p->getName() != "Player")
 				p->update(dt);
-			collisions(p, lm);
+			if (collisions(p, lm)) {
+				itsTheEnd = true;
+				baseDestroyed = true;
+			}
 			if (!p->isAlive()) {
 				if (p->getName() == "Enemy") {
 					enemies_on_map--;
@@ -316,6 +360,12 @@ void Game::StartGame(RenderWindow &window,int level) {
 			window.draw(anim[curInd / 3]);
 		for (auto i : enemesSprite) {
 			window.draw(i);
+		}
+		if (baseDestroyed) {
+			window.draw(GameOver);
+		}
+		else if(enemies <=0 ){
+			window.draw(WinText);
 		}
 		window.display();
 

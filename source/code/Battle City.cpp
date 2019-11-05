@@ -124,6 +124,8 @@ int main() {
 			}
 			*/
 			if (event.type == Event::KeyPressed) {
+				bool win = true;
+				int i = 1;
 				switch (event.key.code) {
 					case Keyboard::Up:
 						currentIndex--;
@@ -136,7 +138,10 @@ int main() {
 					case Keyboard::Enter:
 						switch (currentIndex) {
 							case 0:
-								game.StartGame(window,1);
+								while (win) {
+									win = game.StartGame(window,i);
+									i++;
+								}
 								break;
 							case 2:
 								game.Constructor(window);
