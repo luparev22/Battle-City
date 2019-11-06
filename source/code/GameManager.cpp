@@ -151,9 +151,9 @@ bool Game::StartGame(RenderWindow &window,int level) {
 
 	Text GameOver;
 	GameOver.setFont(stageFont);
-	GameOver.setString("GAME OVER");
-	GameOver.setCharacterSize(17);
-	GameOver.setPosition((wx - stageText.getGlobalBounds().width) / 2 - 60, wy - 24);
+	GameOver.setString("GAME\nOVER");
+	GameOver.setCharacterSize(30);
+	GameOver.setPosition((wx - stageText.getGlobalBounds().width) / 2 - 45, wy - 72);
 	GameOver.setFillColor(Color::Red);
 
 	Text WinText;
@@ -176,10 +176,10 @@ bool Game::StartGame(RenderWindow &window,int level) {
 			else {
 				timeToEnd++;
 				if (baseDestroyed) {
-					GameOver.setPosition(GameOver.getPosition().x, GameOver.getPosition().y - 0.5f);
+					GameOver.setPosition(GameOver.getPosition().x, GameOver.getPosition().y - 1.5f);
 				}
 				else {
-					WinText.setPosition(WinText.getPosition().x, WinText.getPosition().y - 0.5f);
+					WinText.setPosition(WinText.getPosition().x, WinText.getPosition().y - 1.5f);
 				}
 			}
 		}
