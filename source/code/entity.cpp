@@ -22,6 +22,7 @@ void Tank::shoot(Image image) {
 }
 
 PlayerTank::PlayerTank(Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H) : Tank(image,entities, x, y, x_image, y_image, W, H) {
+	setShield(false);
 	setName("Player");
 	setSpeed(6);
 	getSprite()->setTextureRect(IntRect(0, 16 * getTankLevel(), 16, 16));
@@ -116,10 +117,10 @@ void Bullet::update(float dt) {
 					this->setAlive(false);
 					getFather()->setReload(false);
 				}
-			//TO KILL PLAYER PLACE "ENEMY"
-			}else if (father->getName() == "loli4") {
+			}else if (father->getName() == "Enemy") {
 				if ((*it) == this)continue;
 				if ((*it)->getName()=="Enemy")continue;
+				if ((*it)->getName() == "Player" && ((PlayerTank*)(*it))->hasShield() == true)continue;
 				if (this->getRect().intersects((*it)->getRect())) {
 					(*it)->setAlive(false);
 					this->setAlive(false);
@@ -187,10 +188,6 @@ void PlayerTank::update(float dt) {
 		break;
 	}
 
-	if (getX() < 0)setX(0);
-	if (getX() > 624 - 48)setX(624 - 48);
-	if (getY() < 0)setY(0);
-	if (getY() > 624 - 48)setY(624 - 48);
 	setX(getX());
 	setY(getY());
 
@@ -223,6 +220,12 @@ void PlayerTank::update(float dt) {
 
 
 
+
+
+	if (getX() < 0)setX(0);
+	if (getX() > 624 - 48)setX(624 - 48);
+	if (getY() < 0)setY(0);
+	if (getY() > 624 - 48)setY(624 - 48);
 
 
 
@@ -288,7 +291,10 @@ void EnemyTank::changeDirection() {
 
 void EnemyTank::update(float dt) {
 	
-	if (rand() % 32 == 0 && !getReload())this->shoot(getTexture().copyToImage());
+	if (rand() % 32 == 0 && !getReload() && this->getTReload()->getElapsedTime().asMilliseconds()>=250){
+		this->getTReload()->restart();
+		this->shoot(getTexture().copyToImage());
+	};
 
 	if (getDirection() == 'u' && getY() == 0) {
 		switch (rand() % 2) {
@@ -392,12 +398,6 @@ void EnemyTank::update(float dt) {
 
 		break;
 	}
-	if (getX() < 0)setX(0);
-	if (getX() > 624 - 48)setX(624 - 48);
-	if (getY() < 0)setY(0);
-	if (getY() > 624 - 48)setY(624 - 48);
-
-
 
 
 	setX(getX());
@@ -412,6 +412,7 @@ void EnemyTank::update(float dt) {
 	for (it = entities.begin(); it != entities.end(); it++)
 	{
 		if (this == *it || (*it)->getName()=="Bullet")continue;
+		if ((*it)->getName() == "Player" && (*it)->isAlive() == false)continue;
 		if (this->getRect().intersects((*it)->getRect(), lol)) {
 			if (this->getDirection() == 'r') {
 				this->setX(lol.left - 48);
@@ -443,6 +444,11 @@ void EnemyTank::update(float dt) {
 		}
 
 	}
+
+	if (getX() < 0)setX(0);
+	if (getX() > 624 - 48)setX(624 - 48);
+	if (getY() < 0)setY(0);
+	if (getY() > 624 - 48)setY(624 - 48);
 
 
 }

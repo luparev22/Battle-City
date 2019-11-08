@@ -7,6 +7,7 @@
 #include <string>
 #include "entity.h"
 #include "collision.h"
+#include "animations.h"
 #include "GameManager.h"
 
 using namespace sf;
@@ -63,6 +64,9 @@ void DrawSideBar(Image sprite , Font stageFont,int health,int level, RenderWindo
 
 bool Game::StartGame(RenderWindow &window,int level) {
 	sf::Clock clock;
+	sf::Clock respawn;
+	sf::Clock reload;
+
 	int wx = 720, wy = 624;
 	Font stageFont;
 	stageFont.loadFromFile("source/fonts/PressStart2P.ttf");
@@ -70,6 +74,7 @@ bool Game::StartGame(RenderWindow &window,int level) {
 	Text stageText;
 	stageText.setFont(stageFont);
 	stageText.setString("STAGE " + std::to_string(level));
+	stageText.setFillColor(Color::Black);
 	stageText.setCharacterSize(17);
 	stageText.setPosition((wx - stageText.getGlobalBounds().width) / 2, (wy - stageText.getGlobalBounds().height)/2);
 
@@ -107,11 +112,17 @@ bool Game::StartGame(RenderWindow &window,int level) {
 	std::list <Entity*>::iterator it;
 	std::list <Entity*>::iterator it2;
 
-	PlayerTank player(sprite, &entities, 4 * 48, 12 * 48, 0, 0, 16, 16);
-	entities.push_back(&player);
+	PlayerTank *player = new PlayerTank(sprite, &entities, 4 * 48, 12 * 48, 0, 0, 16, 16);
+	health++;
+	player->setAlive(false);
+	entities.push_back(player);
 
 	int enemies = 20;
 	int enemies_on_map = 0;
+
+	std::list<Boom*> boomsSprite;
+	std::list<Boom*>::iterator it_sprite;
+
 
 	std::list<Sprite> enemesSprite;
 	Texture texture;
@@ -134,6 +145,22 @@ bool Game::StartGame(RenderWindow &window,int level) {
 	
 	bool spawnPoint1 = true, spawnPoint2 = true, spawnPoint3 = true;
 	
+	Sprite shield_anim[2];
+	for (int i = 0; i < 2; i++) {
+		shield_anim[i].setTexture(texture);
+		shield_anim[i].setTextureRect(IntRect(256 + 16 * i, 144, 16, 16));
+		//shield_anim[i].setPosition(4 * 48, 12 * 48);
+		shield_anim[i].setScale(3, 3);
+	}
+
+	Sprite spawn_anim_player[4];
+	for (int i = 0; i < 4; i++) {
+		spawn_anim_player[i].setTexture(texture);
+		spawn_anim_player[i].setTextureRect(IntRect(256 + 16 * i, 96, 16, 16));
+		spawn_anim_player[i].setPosition(4 * 48, 12 * 48);
+		spawn_anim_player[i].setScale(3, 3);
+	}
+
 	Sprite anim[4];
 	for (int i = 0; i < 4; i++) {
 		anim[i].setTexture(texture);
@@ -141,7 +168,7 @@ bool Game::StartGame(RenderWindow &window,int level) {
 		anim[i].setPosition(0,0);
 		anim[i].setScale(3, 3);
 	}
-	int curInd=0,times=0,prevSpawn=-1;
+	int curInd=0,times=0,prevSpawn=-1,curIndRespPlayer=0,timesResp=0,curIndShield=0,timesShield=0;
 	bool nowSpawning = false;
 
 	int timeToEnd = 0;
@@ -159,7 +186,7 @@ bool Game::StartGame(RenderWindow &window,int level) {
 	Text WinText;
 	WinText.setFont(stageFont);
 	WinText.setString("YOU WIN!");
-	WinText.setCharacterSize(17);
+	WinText.setCharacterSize(30);
 	WinText.setPosition((wx - stageText.getGlobalBounds().width) / 2 - 60, wy - 24);
 	WinText.setFillColor(Color::Green);
 
@@ -224,7 +251,7 @@ bool Game::StartGame(RenderWindow &window,int level) {
 			}
 			else {
 				curInd++;
-				if (curInd >= 11) {
+				if (curInd > 11) {
 					times++;
 					curInd = 0;
 				}
@@ -237,40 +264,38 @@ bool Game::StartGame(RenderWindow &window,int level) {
 			sound_always.play();
 		}
 
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-			if (sound_always.getBuffer() == &buf_motor)
-				sound_always.setBuffer(buf_move);
-			player.setDirection('l');
-			player.update(dt);
+		if (player->isAlive()) {
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+				if (sound_always.getBuffer() == &buf_motor)
+					sound_always.setBuffer(buf_move);
+				player->setDirection('l');
+				player->update(dt);
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+				if (sound_always.getBuffer() == &buf_motor)
+					sound_always.setBuffer(buf_move);
+				player->setDirection('r');
+				player->update(dt);
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+				if (sound_always.getBuffer() == &buf_motor)
+					sound_always.setBuffer(buf_move);
+				player->setDirection('u');
+				player->update(dt);
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+				if (sound_always.getBuffer() == &buf_motor)
+					sound_always.setBuffer(buf_move);
+				player->setDirection('d');
+				player->update(dt);
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && player->getTReload()->getElapsedTime().asMilliseconds()>=250 && !player->getReload()) {
+				sound_once.setBuffer(buf_shoot);
+				sound_once.play();
+				player->getTReload()->restart();
+				player->shoot(sprite);
+			}
 		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-			if (sound_always.getBuffer() == &buf_motor)
-				sound_always.setBuffer(buf_move);
-			player.setDirection('r');
-			player.update(dt);
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-			if (sound_always.getBuffer() == &buf_motor)
-				sound_always.setBuffer(buf_move);
-			player.setDirection('u');
-			player.update(dt);
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-			if (sound_always.getBuffer() == &buf_motor)
-				sound_always.setBuffer(buf_move);
-			player.setDirection('d');
-			player.update(dt);
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-			std::cout << player.getX() << " " << player.getY() << std::endl;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !player.getReload()) {
-			sound_once.setBuffer(buf_shoot);
-			sound_once.play();
-			player.shoot(sprite);
-		}
-
 
 
 		while (window.pollEvent(event)) {
@@ -279,57 +304,65 @@ bool Game::StartGame(RenderWindow &window,int level) {
 				window.close();
 			}
 			*/
-			if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Left)
-			{
-				if (sound_always.getBuffer() == &buf_move)
-					sound_always.setBuffer(buf_motor);
-				int tile = player.getX() / 24;
-				int p_x = player.getX() % 24;
-				if (p_x >= 12)player.setX((tile + 1) * 24);
-				else player.setX((tile) * 24);
-			}
-			else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Right)
-			{
-				if (sound_always.getBuffer() == &buf_move)
-					sound_always.setBuffer(buf_motor);
-				int tile = player.getX() / 24;
-				int p_x = player.getX() % 24;
-				if (p_x > 12)player.setX((tile + 1) * 24);
-				else player.setX((tile) * 24);
-			}
-			else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Up)
-			{
-				if (sound_always.getBuffer() == &buf_move)
-					sound_always.setBuffer(buf_motor);
-				int tile = player.getY() / 24;
-				int p_y = player.getY() % 24;
-				if (p_y > 12)player.setY((tile + 1) * 24);
-				else player.setY((tile) * 24);
-			}
-			else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Down)
-			{
-				if (sound_always.getBuffer() == &buf_move)
-					sound_always.setBuffer(buf_motor);
-				int tile = player.getY() / 24;
-				int p_y = player.getY() % 24;
-				if (p_y > 12)player.setY((tile + 1) * 24);
-				else player.setY((tile) * 24);
+			if (player->isAlive()){
+				if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Left)
+				{
+					if (sound_always.getBuffer() == &buf_move)
+						sound_always.setBuffer(buf_motor);
+					int tile = player->getX() / 24;
+					int p_x = player->getX() % 24;
+					if (p_x >= 12)player->setX((tile + 1) * 24);
+					else player->setX((tile) * 24);
+				}
+				else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Right)
+				{
+					if (sound_always.getBuffer() == &buf_move)
+						sound_always.setBuffer(buf_motor);
+					int tile = player->getX() / 24;
+					int p_x = player->getX() % 24;
+					if (p_x > 12)player->setX((tile + 1) * 24);
+					else player->setX((tile) * 24);
+				}
+				else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Up)
+				{
+					if (sound_always.getBuffer() == &buf_move)
+						sound_always.setBuffer(buf_motor);
+					int tile = player->getY() / 24;
+					int p_y = player->getY() % 24;
+					if (p_y > 12)player->setY((tile + 1) * 24);
+					else player->setY((tile) * 24);
+				}
+				else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Down)
+				{
+					if (sound_always.getBuffer() == &buf_move)
+						sound_always.setBuffer(buf_motor);
+					int tile = player->getY() / 24;
+					int p_y = player->getY() % 24;
+					if (p_y > 12)player->setY((tile + 1) * 24);
+					else player->setY((tile) * 24);
+				}
 			}
 		}
 
-
 		for (it = entities.begin(); it != entities.end();) {
 			Entity* p = *it;
+		
 			if (p->getName() != "Player")
 				p->update(dt);
+
 			if (collisions(p, lm)) {
 				itsTheEnd = true;
 				baseDestroyed = true;
 			}
-			if (!p->isAlive()) {
+		
+			if (!p->isAlive() && p->getName() != "Player") {
 				if (p->getName() == "Enemy") {
 					enemies_on_map--;
 					enemies--;
+					boomsSprite.push_back(new BoomTank(p->getX() + 16 * 3 / 2, p->getY() + 16 * 3 / 2));
+				}
+				if (p->getName() == "Bullet") {
+					boomsSprite.push_back(new BoomBullet(p->getX() + 2 * 3 / 2, p->getY() + 2 * 3 / 2));
 				}
 				it = entities.erase(it);
 				delete p;
@@ -340,8 +373,6 @@ bool Game::StartGame(RenderWindow &window,int level) {
 		}
 
 
-
-
 		window.clear();
 
 		DrawSideBar(sprite, stageFont, health, level, window);
@@ -350,12 +381,69 @@ bool Game::StartGame(RenderWindow &window,int level) {
 				window.draw(*(i->getSprite()));
 		}
 		for (it = entities.begin(); it != entities.end(); it++) {
+			if((*it)->getName()!= "Player")
 			window.draw(*(*it)->getSprite());
 		}
+		
+
+		
+
+		if (player->isAlive()) {
+			window.draw(*player->getSprite());
+			if (player->hasShield()) {
+				if (timesShield > 50) {
+					player->setShield(false);
+					timesShield = 0;
+				}
+				else {
+					shield_anim[timesShield%2].setPosition(player->getX(), player->getY());
+					window.draw(shield_anim[timesShield % 2]);
+				}
+				timesShield++;
+			}
+		}
+		else if(health>0){
+			if (timesResp>2) {
+				health--;
+				player->setDirection('u');
+				player->setAlive(true);
+				player->setShield(true);
+				player->setX(4 * 48);
+				player->setY(12 * 48);
+				curIndRespPlayer = 0;
+				timesResp = 0;
+			}
+			else {
+				window.draw(spawn_anim_player[curIndRespPlayer / 3]);
+			}
+			curIndRespPlayer++;
+			if (curIndRespPlayer > 11) {
+				timesResp++;
+				curIndRespPlayer = 0;
+			}
+		}
+		else if (health <= 0) {
+			itsTheEnd = true;
+			baseDestroyed = true;
+		}
+
 		for (auto i : lm.tiles) {
 			if (i->getLayout() == 1)
 				window.draw(*(i->getSprite()));
 		}
+
+		
+		for (it_sprite = boomsSprite.begin(); it_sprite != boomsSprite.end(); it_sprite++) {
+				Boom* p = *it_sprite;
+				p->update();
+				window.draw(*p->getSprite());
+				if (p->getRemove() == true) {
+					it_sprite = boomsSprite.erase(it_sprite);
+					delete p;
+				}
+		}
+
+
 		if (nowSpawning)
 			window.draw(anim[curInd / 3]);
 		for (auto i : enemesSprite) {

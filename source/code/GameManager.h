@@ -16,7 +16,7 @@ using namespace sf;
 
 class Game {
 private:
-	int health = 0;
+	int health = 2;
 public:
 	int getHealth() { return health; };
 	void setHealth(int hp) { health = hp; };

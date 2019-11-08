@@ -46,6 +46,7 @@ public:
 
 class Tank : public Entity {
 	private:
+		Clock t_reload;
 		float speed;
 		unsigned short int tankLevel;
 		bool anim = true;
@@ -58,6 +59,7 @@ class Tank : public Entity {
 		void setAnim(bool an) { anim = an; };
 		void setSpeed(float spd) { speed = spd; };
 		void setTankLevel(int tl) { tankLevel = tl; };
+		Clock* getTReload() { return &t_reload; };
 		unsigned short int getTankLevel() { return tankLevel; };
 		bool getReload() { return reload; };
 		bool getAnim() { return anim; };
@@ -65,7 +67,10 @@ class Tank : public Entity {
 };
 
 class PlayerTank : public Tank {
+		bool Shield;
 	public:
+		bool hasShield() { return Shield; };
+		void setShield(bool sh) { Shield = sh; };
 		PlayerTank(Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H);
 		void update(float dt);
 };

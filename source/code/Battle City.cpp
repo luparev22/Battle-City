@@ -100,7 +100,7 @@ int main() {
 	Text all_rights;
 
 	all_rights.setFont(menu_font);
-	all_rights.setString("  (c) 2019 SibSUTIS \n ALL RIGHTS RESERVED");
+	all_rights.setString("  (C) 2019 SIBSUTIS \n ALL RIGHTS RESERVED");
 	all_rights.setCharacterSize(17);
 	all_rights.setPosition((wx - all_rights.getGlobalBounds().width) / 2, wy - 2*all_rights.getGlobalBounds().height);
 	all_rights.setLineSpacing(2);
@@ -138,6 +138,7 @@ int main() {
 					case Keyboard::Enter:
 						switch (currentIndex) {
 							case 0:
+								game.setHealth(2);
 								while (win) {
 									win = game.StartGame(window,i);
 									i++;
