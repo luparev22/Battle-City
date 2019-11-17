@@ -149,11 +149,11 @@ int main() {
 								while (win) {
 									win = game.StartGame(window,i);
 									i++;
-									if (i > 1 && custom_level) {
+									if (i > 2 && custom_level) {
 										win = game.StartGame(window, 999);
 										break;
 									}
-									else if (i > 1) break;
+									else if (i > 2) break;
 								}
 								break;
 							case 2:

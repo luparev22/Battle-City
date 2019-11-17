@@ -116,25 +116,25 @@ bool collisions(Entity* player,LevelManager lm) {
 	}
 	else {
 		if (player->getDirection() == 'u' && x < 25) {
-			if (!lm.tiles[26 * y + x]->getDrive() || !lm.tiles[26 * y + x + 1]->getDrive()) {
+			if (lm.tiles[26 * y + x]->getLayout() == -1 || lm.tiles[26 * y + x + 1]->getLayout() == -1 || !lm.tiles[26 * y + x]->getDrive() || !lm.tiles[26 * y + x + 1]->getDrive()) {
 				player->setY(lm.tiles[26 * y + x]->getY() + globalDel);
 				player->getSprite()->setPosition(player->getX(), player->getY());
 			}
 		}
 		if (player->getDirection() == 'd' && y < 24 && x < 25) {
-			if (!lm.tiles[26 * (y + 2) + x]->getDrive() || !lm.tiles[26 * (y + 2) + x + 1]->getDrive()) {
+			if (lm.tiles[26 * (y+2) + x]->getLayout() == -1 || lm.tiles[26 * (y+2) + x + 1]->getLayout() == -1 || !lm.tiles[26 * (y + 2) + x]->getDrive() || !lm.tiles[26 * (y + 2) + x + 1]->getDrive()) {
 				player->setY(lm.tiles[26 * (y + 2) + x]->getY() - 2 * globalDel);
 				player->getSprite()->setPosition(player->getX(), player->getY());
 			}
 		}
 		if (player->getDirection() == 'r' && y < 25 && x < 24) {
-			if (!lm.tiles[26 * y + x + 2]->getDrive() || !lm.tiles[26 * (y + 1) + x + 2]->getDrive()) {
+			if (lm.tiles[26 * y + x+2]->getLayout() == -1 || lm.tiles[26 * (y+1) + x + 2]->getLayout() == -1 || !lm.tiles[26 * y + x + 2]->getDrive() || !lm.tiles[26 * (y + 1) + x + 2]->getDrive()) {
 				player->setX(lm.tiles[26 * y + x + 2]->getX() - 2 * globalDel);
 				player->getSprite()->setPosition(player->getX(), player->getY());
 			}
 		}
 		if (player->getDirection() == 'l' && y < 25) {
-			if (!lm.tiles[26 * y + x]->getDrive() || !lm.tiles[26 * (y + 1) + x]->getDrive()) {
+			if (lm.tiles[26 * y + x]->getLayout() == -1 || lm.tiles[26 * (y+1) + x]->getLayout() == -1 || !lm.tiles[26 * y + x]->getDrive() || !lm.tiles[26 * (y + 1) + x]->getDrive()) {
 				player->setX(lm.tiles[26 * y + x]->getX() + globalDel);
 				player->getSprite()->setPosition(player->getX(), player->getY());
 			}

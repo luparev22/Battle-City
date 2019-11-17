@@ -34,7 +34,7 @@ void LevelManager::DrawMap(){
 				tile = new Tile(image, j * 24, i * 24, 16 * 16, 16 * 4 + 8, 8, 8, false, false, 0);
 				break;
 			case '3':
-				tile = new Tile(image, j * 24, i * 24, 16 * 16, 16 * 5, 8, 8, false, false, 0);
+				tile = new Tile(image, j * 24, i * 24, 16 * 16, 16 * 5, 8, 8, false, true, -1);
 				break;
 			case '4':
 				tile = new Tile(image, j * 24, i * 24, 16 * 16 + 8, 16 * 4+8, 8, 8, false, true, 1);
