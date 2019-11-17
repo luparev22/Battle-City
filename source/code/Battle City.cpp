@@ -7,7 +7,7 @@
 #include "collision.h"
 #include <fstream>
 #include "GameManager.h"
-//#include <windows.h>
+#include <windows.h>
 using namespace sf;
 
 
@@ -16,8 +16,8 @@ using namespace sf;
 
 int main() {
 
-	//HWND hWnd = GetConsoleWindow();
-	//ShowWindow(hWnd, SW_SHOW);
+	HWND hWnd = GetConsoleWindow();
+	ShowWindow(hWnd, SW_HIDE);
 
 
 	
@@ -118,14 +118,21 @@ int main() {
 	while (window.isOpen()) {
 		Event event;
 		while (window.pollEvent(event)) {
-			/*
-			if (event.type == Event::Closed || event.key.code == Keyboard::Escape) {
+			
+			if (event.type == Event::Closed) {
 				window.close();
 			}
-			*/
+			
 			if (event.type == Event::KeyPressed) {
 				bool win = true;
+				bool custom_level = false;
 				int i = 1;
+
+				std::ifstream file;
+				file.open("source/map/999.txt");
+
+				if (file)custom_level = true;
+
 				switch (event.key.code) {
 					case Keyboard::Up:
 						currentIndex--;
@@ -142,6 +149,11 @@ int main() {
 								while (win) {
 									win = game.StartGame(window,i);
 									i++;
+									if (i > 1 && custom_level) {
+										win = game.StartGame(window, 999);
+										break;
+									}
+									else if (i > 1) break;
 								}
 								break;
 							case 2:

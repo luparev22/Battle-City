@@ -43,7 +43,7 @@ void DrawSideBar(Image sprite , Font stageFont,int health,int level, RenderWindo
 
 	Text FlagText;
 	FlagText.setFont(stageFont);
-	FlagText.setString(std::to_string(level));
+	FlagText.setString(level == 999 ? "CUS" : std::to_string(level));
 	FlagText.setCharacterSize(20);
 	FlagText.setPosition(658, 528);
 	FlagText.setFillColor(Color(0, 0, 1));
@@ -73,7 +73,7 @@ bool Game::StartGame(RenderWindow &window,int level) {
 
 	Text stageText;
 	stageText.setFont(stageFont);
-	stageText.setString("STAGE " + std::to_string(level));
+	stageText.setString("STAGE " + (level==999?"CUSTOM":std::to_string(level)));
 	stageText.setFillColor(Color::Black);
 	stageText.setCharacterSize(17);
 	stageText.setPosition((wx - stageText.getGlobalBounds().width) / 2, (wy - stageText.getGlobalBounds().height)/2);
@@ -187,7 +187,7 @@ bool Game::StartGame(RenderWindow &window,int level) {
 	WinText.setFont(stageFont);
 	WinText.setString("YOU WIN!");
 	WinText.setCharacterSize(30);
-	WinText.setPosition((wx - stageText.getGlobalBounds().width) / 2 - 60, wy - 24);
+	WinText.setPosition((wx - stageText.getGlobalBounds().width) / 2 - 100, wy - 24);
 	WinText.setFillColor(Color::Green);
 
 	while (window.isOpen()) {
@@ -260,7 +260,7 @@ bool Game::StartGame(RenderWindow &window,int level) {
 
 		float dt = clock.restart().asSeconds();
 		Event event;
-		if (sound_always.getStatus() == Sound::Status::Stopped) {
+		if (sound_always.getStatus() == Sound::Status::Stopped && player->isAlive()) {
 			sound_always.play();
 		}
 
@@ -299,11 +299,11 @@ bool Game::StartGame(RenderWindow &window,int level) {
 
 
 		while (window.pollEvent(event)) {
-			/*
-			if (event.type == Event::Closed || event.key.code == Keyboard::Escape) {
-				window.close();
+			
+			if (event.type == Event::Closed) {
+				exit(1);
 			}
-			*/
+			
 			if (player->isAlive()){
 				if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Left)
 				{
@@ -403,6 +403,8 @@ bool Game::StartGame(RenderWindow &window,int level) {
 			}
 		}
 		else if(health>0){
+			sound_always.stop();
+			sound_always.setBuffer(buf_motor);
 			if (timesResp>2) {
 				health--;
 				player->setDirection('u');
@@ -664,11 +666,11 @@ void Game::Constructor(RenderWindow &window) {
 		Event event;
 
 		while (window.pollEvent(event)) {
-			/*
-			if (event.type == Event::Closed || event.key.code == Keyboard::Escape) {
-				window.close();
+			
+			if (event.type == Event::Closed) {
+				exit(1);
 			}
-			*/
+			
 			if (event.type == Event::KeyPressed) {
 				if (event.key.code == sf::Keyboard::Num1) {
 					state = '0';
