@@ -11,6 +11,16 @@ Entity::Entity(Image image, std::list <Entity*> *entities, int x, int y, int x_i
 
 }
 
+Entity::Entity(Image image, std::list <Entity*> *entities, int x_image, int y_image, int W, int H) :entities(entities), x(0), y(0), W(W), H(H), alive(true) {
+
+	texture.loadFromImage(image);
+	sprite.setTexture(texture);
+	sprite.setTextureRect(IntRect(x_image, y_image, W, H));
+	sprite.setPosition(x, y);
+	getSprite()->setScale(3, 3);
+
+}
+
 Tank::Tank(Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H) :Entity(image,entities, x, y, x_image, y_image, W, H), speed(4), tankLevel(0) 
 {
 	setDirection('u');
@@ -46,29 +56,21 @@ Bullet::Bullet(Tank *player, Image image, std::list <Entity*> *entities, int x, 
 			getSprite()->setTextureRect(IntRect(323, 102, 3, 4));
 			setX(player->getX() + 19);
 			setY(player->getY() + 16);
-			setX2(getX() + 9);
-			setY2(getY());
 			break;
 		case 'd':
 			getSprite()->setTextureRect(IntRect(339, 102, 3, 4));
 			setX(player->getX() + 19);
 			setY(player->getY() + 16);
-			setX2(getX() + 9);
-			setY2(getY());
 			break;
 		case 'l':
 			getSprite()->setTextureRect(IntRect(330, 102, 4, 3));
 			setX(player->getX() + 16);
 			setY(player->getY() + 19);
-			setX2(getX());
-			setY2(getY()+9);
 			break;
 		case 'r':
 			getSprite()->setTextureRect(IntRect(346, 102, 4, 3));
 			setX(player->getX() + 16);
 			setY(player->getY() + 19);
-			setX2(getX());
-			setY2(getY()+9);
 			break;
 	}
 
@@ -78,19 +80,15 @@ void Bullet::update(float dt) {
 	switch (getDirection()) {
 		case 'u':
 			setY(getY() - speed);
-			setY2(getY2() - speed);
 			break;
 		case 'd':
 			setY(getY() + speed);
-			setY2(getY2() + speed);
 			break;
 		case 'l':
 			setX(getX() - speed);
-			setX2(getX2() - speed);
 			break;
 		case 'r':
 			setX(getX() + speed);
-			setX2(getX2() + speed);
 			break;
 		}
 		if (getX() > 624-16 || getX() < 0+16 || getY() < 0+16 || getY() > 624-16) {

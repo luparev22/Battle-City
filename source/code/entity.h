@@ -7,6 +7,7 @@
 
 using namespace sf;
 
+
 class Entity {
 private:
 	Texture texture;
@@ -21,6 +22,7 @@ private:
 	std::list <Entity*> *entities;
 public:
 	Entity(Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H);
+	Entity(Image image, std::list <Entity*> *entities, int x_image, int y_image, int W, int H);
 	Sprite* getSprite() { return &sprite; };
 	int getX() { return x; };
 	int getY() { return y; };
@@ -88,15 +90,9 @@ class Bullet :public Entity {
 private:
 	float speed;
 	Tank* father;
-	int x_2;
-	int y_2;
 public:
 	Bullet(Tank *player, Image image, std::list <Entity*> *entities, int x, int y, int x_image, int y_image, int W, int H);
 	void update(float dt);
 	Tank* getFather() { return father; };
-	void setY2(int y) { y_2 = y; };
-	void setX2(int x) { x_2 = x; };
-	int getX2() { return x_2; };
-	int getY2() {return y_2;};
 };
 #endif
